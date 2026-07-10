@@ -1,0 +1,359 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{2e539a97-437d-465e-96b4-b8b2b125945e}</ProjectGuid>
+    <RootNamespace>Durak</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\SFML_Settings\SFML_Settings.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\SFML_Settings\SFML_Settings.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\SFML_Settings\SFML_Settings.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\SFML_Settings\SFML_Settings.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\CPP_Projects\SFML_Projects\Durak\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatSpecificWarningsAsErrors>
+      </TreatSpecificWarningsAsErrors>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\CPP_Projects\SFML_Projects\Durak\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatSpecificWarningsAsErrors>
+      </TreatSpecificWarningsAsErrors>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\CPP_Projects\SFML_Projects\Durak\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatSpecificWarningsAsErrors>
+      </TreatSpecificWarningsAsErrors>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\CPP_Projects\SFML_Projects\Durak\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatSpecificWarningsAsErrors>
+      </TreatSpecificWarningsAsErrors>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="source\game\ClientLobbyLogic.cpp" />
+    <ClCompile Include="source\game\ClientPlayerData.cpp" />
+    <ClCompile Include="source\game\Game.cpp" />
+    <ClCompile Include="source\game\LobbyLogic.cpp" />
+    <ClCompile Include="source\game\scenes\LobbyScene.cpp" />
+    <ClCompile Include="source\network\ClientModel.cpp" />
+    <ClCompile Include="source\game\CardData.cpp" />
+    <ClCompile Include="source\game\ClassicRules.cpp" />
+    <ClCompile Include="source\game\GameLogic.cpp" />
+    <ClCompile Include="source\game\PlayerData.cpp" />
+    <ClCompile Include="source\game\PlayerProfile.h" />
+    <ClCompile Include="source\network\Client.cpp" />
+    <ClCompile Include="source\network\ClientPacketDispatcher.h" />
+    <ClCompile Include="source\network\ClientSession.cpp" />
+    <ClCompile Include="source\network\PacketFactory.cpp" />
+    <ClCompile Include="source\network\Server.cpp" />
+    <ClCompile Include="source\resources\TextureManager.cpp" />
+    <ClCompile Include="source\Source.cpp" />
+    <ClCompile Include="source\states\client\ClientLobbyState.cpp" />
+    <ClCompile Include="source\states\server\GameState.cpp" />
+    <ClCompile Include="source\states\server\LobbyState.cpp" />
+    <ClCompile Include="source\states\SeatPositionsState.cpp" />
+    <ClCompile Include="source\core\animation\Easing.cpp" />
+    <ClCompile Include="source\ui\ButtonBuilder.cpp" />
+    <ClCompile Include="source\ui\controllers\DragController.cpp" />
+    <ClCompile Include="source\ui\core\UIElement.cpp" />
+    <ClCompile Include="source\ui\layers\ExitConfirmationLayer.cpp" />
+    <ClCompile Include="source\ui\layers\InputIpAddressLayer.cpp" />
+    <ClCompile Include="source\ui\layers\LobbyLayer.cpp" />
+    <ClCompile Include="source\ui\layers\MainMenuLayer.cpp" />
+    <ClCompile Include="source\resources\CursorImages.cpp" />
+    <ClCompile Include="source\resources\Fonts.cpp" />
+    <ClCompile Include="source\ui\LobbyPlayerView.cpp" />
+    <ClCompile Include="source\ui\primitives\RoundedRectangleShape.cpp" />
+    <ClCompile Include="source\game\scenes\TestMenuScene.cpp" />
+    <ClCompile Include="source\ui\widgets\TextBox.cpp" />
+    <ClCompile Include="source\ui\UIController.cpp" />
+    <ClCompile Include="source\utils\NetworkUtils.cpp" />
+    <ClCompile Include="source\utils\StringUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\core\ClientContext.h" />
+    <ClInclude Include="source\core\Committable.h" />
+    <ClInclude Include="source\core\Concepts.h" />
+    <ClInclude Include="source\core\input\InputController.h" />
+    <ClInclude Include="source\core\input\InputState.h" />
+    <ClInclude Include="source\core\LaunchArgs.h" />
+    <ClInclude Include="source\game\ClientLobbyLogic.h" />
+    <ClInclude Include="source\game\events\domain\ExitEvent.h" />
+    <ClInclude Include="source\game\events\domain\InvalidRequestEvent.h" />
+    <ClInclude Include="source\game\events\domain\SnapshotAppliedEvent.h" />
+    <ClInclude Include="source\game\events\domain\WelcomeEvent.h" />
+    <ClInclude Include="source\game\events\requests\ExitRequestEvent.h" />
+    <ClInclude Include="source\game\events\requests\InputIpAddressRequestEvent.h" />
+    <ClInclude Include="source\game\events\requests\SeatPositionsSwapRequestEvent.h" />
+    <ClInclude Include="source\game\events\ui\LobbyStateSyncEvent.h" />
+    <ClInclude Include="source\game\GameContext.h" />
+    <ClInclude Include="source\game\LobbyLogic.h" />
+    <ClInclude Include="source\game\scenes\LobbyScene.h" />
+    <ClInclude Include="source\network\ClientModel.h" />
+    <ClInclude Include="source\core\Constants.h" />
+    <ClInclude Include="source\core\DebugLog.h" />
+    <ClInclude Include="source\core\EventInitiator.h" />
+    <ClInclude Include="source\core\EventSystem.h" />
+    <ClInclude Include="source\core\Trackable.h" />
+    <ClInclude Include="source\fonts\Fonts.h" />
+    <ClInclude Include="source\game\CardData.h" />
+    <ClInclude Include="source\game\ClassicRules.h" />
+    <ClInclude Include="source\game\ClientPlayerData.h" />
+    <ClInclude Include="source\game\events\domain\ConnectionWithPlayerLostEvent.h" />
+    <ClInclude Include="source\game\events\domain\PlayerDisconnectedEvent.h" />
+    <ClInclude Include="source\game\events\domain\PlayerNicknameChangedEvent.h" />
+    <ClInclude Include="source\game\events\domain\PlayersPerGameChangedEvent.h" />
+    <ClInclude Include="source\game\events\domain\PlayerReconnectedEvent.h" />
+    <ClInclude Include="source\game\events\domain\SeatPositionsChangedEvent.h" />
+    <ClInclude Include="source\game\events\domain\SeatPositionsSwappedEvent.h" />
+    <ClInclude Include="source\game\events\domain\ServerDisconnectEvent.h" />
+    <ClInclude Include="source\game\events\domain\ServerDisconnectPacket.h" />
+    <ClInclude Include="source\game\events\requests\PlayersPerGameChangeRequestEvent.h" />
+    <ClInclude Include="source\game\events\requests\JoinGameRequestEvent.h" />
+    <ClInclude Include="source\game\events\requests\CreateGameRequestEvent.h" />
+    <ClInclude Include="source\game\events\domain\PlayerConnectedEvent.h" />
+    <ClInclude Include="source\game\events\Event.h" />
+    <ClInclude Include="source\game\events\game\BeatEvent.h" />
+    <ClInclude Include="source\game\events\game\ClearTableEvent.h" />
+    <ClInclude Include="source\game\events\game\DealCardEvent.h" />
+    <ClInclude Include="source\game\events\game\ExtraCardsToDealEvent.h" />
+    <ClInclude Include="source\game\events\game\IdentifyNewRolesPositionEvent.h" />
+    <ClInclude Include="source\game\events\game\InvalidMoveEvent.h" />
+    <ClInclude Include="source\game\events\game\MainTrumpCardIdentifiedEvent.h" />
+    <ClInclude Include="source\game\events\game\NewPhaseEvent.h" />
+    <ClInclude Include="source\game\events\game\PassActionToPlayerEvent.h" />
+    <ClInclude Include="source\game\events\game\RewardPlayerEvent.h" />
+    <ClInclude Include="source\game\events\game\ShowPlayerTrumpCardEvent.h" />
+    <ClInclude Include="source\game\events\game\TossEvent.h" />
+    <ClInclude Include="source\game\events\requests\SeatPositionsChangeRequestEvent.h" />
+    <ClInclude Include="source\game\Game.h" />
+    <ClInclude Include="source\game\GameEvent.h" />
+    <ClInclude Include="source\game\GameLogic.h" />
+    <ClInclude Include="source\game\GamePlayerInfo.h" />
+    <ClInclude Include="source\game\Rules.h" />
+    <ClInclude Include="source\game\LobbyPlayerInfo.h" />
+    <ClInclude Include="source\game\PlayerData.h" />
+    <ClInclude Include="source\game\RulesType.h" />
+    <ClInclude Include="source\game\TableInfo.h" />
+    <ClInclude Include="source\network\Client.h" />
+    <ClInclude Include="source\network\ClientSession.h" />
+    <ClInclude Include="source\network\ConnectionState.h" />
+    <ClInclude Include="source\network\Packet.h" />
+    <ClInclude Include="source\network\ServerPacketDispatcher.h" />
+    <ClInclude Include="source\network\PacketFactory.h" />
+    <ClInclude Include="source\network\SendResult.h" />
+    <ClInclude Include="source\protocol\SyncState.h" />
+    <ClInclude Include="source\protocol\ClientRole.h" />
+    <ClInclude Include="source\protocol\DisconnectReason.h" />
+    <ClInclude Include="source\protocol\PacketType.h" />
+    <ClInclude Include="source\network\PendingPacket.h" />
+    <ClInclude Include="source\network\Server.h" />
+    <ClInclude Include="source\protocol\SessionPhase.h" />
+    <ClInclude Include="source\protocol\SnapshotType.h" />
+    <ClInclude Include="source\resources\TextureManager.h" />
+    <ClInclude Include="source\states\client\ClientGameState.h" />
+    <ClInclude Include="source\states\client\ClientLobbyState.h" />
+    <ClInclude Include="source\states\core\IState.h" />
+    <ClInclude Include="source\states\server\GameState.h" />
+    <ClInclude Include="source\states\server\LobbyState.h" />
+    <ClInclude Include="source\states\SeatPositionsState.h" />
+    <ClInclude Include="source\testData\ClientLobbyStateBuilder.h" />
+    <ClInclude Include="source\core\animation\Easing.h" />
+    <ClInclude Include="source\core\animation\MoveAnimation.h" />
+    <ClInclude Include="source\core\animation\TimedAnimation.h" />
+    <ClInclude Include="source\core\animation\RotateAnimation.h" />
+    <ClInclude Include="source\ui\ButtonBuilder.h" />
+    <ClInclude Include="source\ui\controllers\DragController.h" />
+    <ClInclude Include="source\ui\elements\SpriteElement.h" />
+    <ClInclude Include="source\ui\layers\LobbyLayer.h" />
+    <ClInclude Include="source\ui\LobbyPlayerView.h" />
+    <ClInclude Include="source\ui\panels\LobbyQueuePanel.h" />
+    <ClInclude Include="source\ui\panels\LobbySeatsPanel.h" />
+    <ClInclude Include="source\ui\styles\ButtonStyle.h" />
+    <ClInclude Include="source\ui\styles\ButtonType.h" />
+    <ClInclude Include="source\ui\core\Panel.h" />
+    <ClInclude Include="source\ui\core\ILayer.h" />
+    <ClInclude Include="source\ui\elements\RectangleElement.h" />
+    <ClInclude Include="source\ui\elements\RoundedRectangleElement.h" />
+    <ClInclude Include="source\ui\elements\TextElement.h" />
+    <ClInclude Include="source\ui\layers\ExitConfirmationLayer.h" />
+    <ClInclude Include="source\ui\layers\InputIpAddressLayer.h" />
+    <ClInclude Include="source\ui\layers\MainMenuLayer.h" />
+    <ClInclude Include="source\core\animation\AnimationState.h" />
+    <ClInclude Include="source\core\animation\Animation.h" />
+    <ClInclude Include="source\ui\state\InteractionColorsState.h" />
+    <ClInclude Include="source\ui\state\OutlineSettingsState.h" />
+    <ClInclude Include="source\ui\styles\VisualComponent.h" />
+    <ClInclude Include="source\ui\widgets\Button.h" />
+    <ClInclude Include="source\ui\state\ControlState.h" />
+    <ClInclude Include="source\resources\CursorsImages.h" />
+    <ClInclude Include="source\resources\Fonts.h" />
+    <ClInclude Include="source\ui\primitives\RoundedRectangleShape.h" />
+    <ClInclude Include="source\game\scenes\TestMenuScene.h" />
+    <ClInclude Include="source\core\scene\IScene.h" />
+    <ClInclude Include="source\ui\widgets\TextBox.h" />
+    <ClInclude Include="source\ui\UIController.h" />
+    <ClInclude Include="source\ui\core\UIElement.h" />
+    <ClInclude Include="source\ui\core\UIInteractive.h" />
+    <ClInclude Include="source\utils\EasingUtils.h" />
+    <ClInclude Include="source\utils\LerpUtils.h" />
+    <ClInclude Include="source\utils\MathUtils.h" />
+    <ClInclude Include="source\utils\NetworkUtils.h" />
+    <ClInclude Include="source\utils\RandomUtils.h" />
+    <ClInclude Include="source\utils\StringUtils.h" />
+    <ClInclude Include="source\utils\UIUtils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\images\Gradient128x128.png" />
+    <Image Include="assets\images\Gradient32x32.png" />
+    <Image Include="assets\images\Gradient48x48.png" />
+    <Image Include="assets\images\Gradient64x64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="assets\fonts\arial.ttf" />
+    <Font Include="assets\fonts\arialbd.ttf" />
+    <Font Include="assets\fonts\arialbi.ttf" />
+    <Font Include="assets\fonts\ariali.ttf" />
+    <Font Include="assets\fonts\ARIALN.TTF" />
+    <Font Include="assets\fonts\ARIALNB.TTF" />
+    <Font Include="assets\fonts\ARIALNBI.TTF" />
+    <Font Include="assets\fonts\ARIALNI.TTF" />
+    <Font Include="assets\fonts\ariblk.ttf" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

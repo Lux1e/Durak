@@ -1,0 +1,25 @@
+# Visual Studio
+.vs/
+*.VC.db
+
+# Build
+x64/
+x86/
+Debug/
+Release/
+
+# Intermediate files
+*.obj
+*.pdb
+*.ilk
+*.ipdb
+*.iobj
+
+# Executables
+*.exe
+
+# User settings
+*.user
+*.suo
+
+profiles/
