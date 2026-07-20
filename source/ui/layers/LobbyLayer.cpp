@@ -123,7 +123,7 @@ void LobbyLayer::initTopPanel()
 	m_topLeftPanel->setSize({ m_queuePanel->getSize().x, m_topPanel->getSize().y * 0.8f });
 	m_topLeftPanel->setPosition({ m_screenOffset.x, m_topPanel->getSize().y * 0.1f });
 
-	m_topLeftPanel->init(m_clientLobbyState, m_gameContext, m_clientContext);
+	m_topLeftPanel->init(*m_clientLobbyState, m_gameContext, m_clientContext);
 }
 
 void LobbyLayer::initArrowRotatePanel()
@@ -148,7 +148,7 @@ void LobbyLayer::initTablePanel()
 	table.shape().setFillColor(sf::Color::Green);
 
 	m_seatsPanel = &static_cast<LobbySeatsPanel&>(m_tablePanel->addChild(std::make_unique<LobbySeatsPanel>(m_tablePanel->getSize())));
-	m_seatsPanel->init(table, m_lobbyPlayerViewGlobalSize, m_clientLobbyState.getPlayersPerGame());
+	m_seatsPanel->init(table, m_lobbyPlayerViewGlobalSize, m_clientLobbyState->getPlayersPerGame());
 }
 
 void LobbyLayer::initChatPanel() //to do
@@ -218,8 +218,8 @@ void LobbyLayer::initPlayersPanel()
 {
 	m_playersPanel->setTransparentToInput(true);
 
-	for (const auto& [id, playerData] : m_clientLobbyState.getAllPlayersById())
-		addPlayer(id, playerData.getNickname(), playerData.getRole(), m_clientLobbyState.getPlayerSeatIndex(id).value());
+	for (const auto& [id, playerData] : m_clientLobbyState->getAllPlayersById())
+		addPlayer(id, playerData.getNickname(), playerData.getRole(), m_clientLobbyState->getPlayerSeatIndex(id).value());
 }
 
 
@@ -260,7 +260,7 @@ void LobbyLayer::addPlayer(uint32_t id, std::string nickname, ClientRole role, i
 
 	if (seatIndex == Constants::Lobby::QueueSeat)
 	{
-		if (auto seatIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(id); seatIndexOpt)
+		if (auto seatIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(id); seatIndexOpt)
 			player.setPosition(MathUtils::round(inverse.transformPoint(m_queuePanel->getPlayerGlobalSeatPositionByQueueIndex(seatIndexOpt.value()))));
 		else
 			assert(false);
@@ -286,7 +286,7 @@ void LobbyLayer::removePlayer(uint32_t id)
 void LobbyLayer::removePlayer(LobbyPlayerView& player)
 {
 	const uint32_t id = player.getId();
-	auto seatIndexOpt = m_clientLobbyState.getPlayerSeatIndex(id);
+	auto seatIndexOpt = m_clientLobbyState->getPlayerSeatIndex(id);
 	auto& children = m_playersPanel->getAllChildren();
 
 	auto itMap = m_playersById.find(id);
@@ -377,13 +377,13 @@ bool LobbyLayer::onLobbyPlayerViewDrop(LobbyPlayerView& player)
 
 	uint32_t playerId = player.getId();
 	bool inQueue = false;
-	int currentPlayerSeatIndex = m_clientLobbyState.getPlayerSeatIndex(playerId).value();
+	int currentPlayerSeatIndex = m_clientLobbyState->getPlayerSeatIndex(playerId).value();
 	std::optional<sf::Vector2f> currentPlayerGlobalSeatPosition = std::nullopt;
 
 	if (currentPlayerSeatIndex == Constants::Lobby::QueueSeat)
 	{
 		inQueue = true;
-		currentPlayerSeatIndex = static_cast<int>(m_clientLobbyState.getPlayerIndexInQueueById(playerId).value());
+		currentPlayerSeatIndex = static_cast<int>(m_clientLobbyState->getPlayerIndexInQueueById(playerId).value());
 		currentPlayerGlobalSeatPosition = m_queuePanel->getPlayerGlobalSeatPositionByQueueIndex(currentPlayerSeatIndex);
 	}
 
@@ -401,7 +401,7 @@ bool LobbyLayer::onLobbyPlayerViewDrop(LobbyPlayerView& player)
 
 		if (inQueue || seatIndex != currentPlayerSeatIndex)
 		{
-			if (auto otherPlayerIdOpt = m_clientLobbyState.getPlayerIdBySeatIndex(seatIndex))
+			if (auto otherPlayerIdOpt = m_clientLobbyState->getPlayerIdBySeatIndex(seatIndex))
 			{
 				if (canSwapPositions())
 					m_gameContext.ES.publish<SeatPositionsSwapRequestEvent>({ playerId, otherPlayerIdOpt.value() }, m_clientContext.localId);
@@ -434,7 +434,7 @@ bool LobbyLayer::canChangePosition()
 		return true;
 
 	else
-		return m_clientLobbyState.canMoveToAnotherSeat();
+		return m_clientLobbyState->canMoveToAnotherSeat();
 }
 
 bool LobbyLayer::canSwapPositions()
@@ -448,11 +448,11 @@ bool LobbyLayer::canSwapPositions()
 
 void LobbyLayer::updatePlayersSeatsInQueue()
 {
-	const std::vector<uint32_t>& ids = m_clientLobbyState.getAllPlayersIdsInQueue();
+	const std::vector<uint32_t>& ids = m_clientLobbyState->getAllPlayersIdsInQueue();
 
 	for (const auto& id : ids)
 	{
-		auto queueIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(id);
+		auto queueIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(id);
 		assert(queueIndexOpt);
 
 		sf::Vector2f playerGlobalSeatPosition = m_queuePanel->getPlayerGlobalSeatPositionByQueueIndex(queueIndexOpt.value());
@@ -491,7 +491,7 @@ void LobbyLayer::onSeatPositionsChangedEvent(const SeatPositionsChangedEvent& ev
 
 	if (event.newSeatIndex == Constants::Lobby::QueueSeat)
 	{
-		auto queueIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(event.playerId);
+		auto queueIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(event.playerId);
 		if (!queueIndexOpt)
 		{
 			resyncLayer();
@@ -521,8 +521,8 @@ void LobbyLayer::onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& ev
 	auto firstPlayerIt = m_playersById.find(event.firstPlayerId);
 	auto secondPlayerIt = m_playersById.find(event.secondPlayerId);
 
-	auto firstPlayerSeatIndex = m_clientLobbyState.getPlayerSeatIndex(event.firstPlayerId);
-	auto secondPlayerSeatIndex = m_clientLobbyState.getPlayerSeatIndex(event.secondPlayerId);
+	auto firstPlayerSeatIndex = m_clientLobbyState->getPlayerSeatIndex(event.firstPlayerId);
+	auto secondPlayerSeatIndex = m_clientLobbyState->getPlayerSeatIndex(event.secondPlayerId);
 
 	if (firstPlayerIt == m_playersById.end() || secondPlayerIt == m_playersById.end() || !firstPlayerSeatIndex || !secondPlayerSeatIndex || (firstPlayerSeatIndex == secondPlayerSeatIndex))
 	{
@@ -540,7 +540,7 @@ void LobbyLayer::onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& ev
 
 	if (firstPlayerSeatIndex.value() == Constants::Lobby::QueueSeat)
 	{
-		auto firstPlayerQueueIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(firstPlayer.getId());
+		auto firstPlayerQueueIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(firstPlayer.getId());
 		if (!firstPlayerQueueIndexOpt)
 		{
 			resyncLayer();
@@ -556,7 +556,7 @@ void LobbyLayer::onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& ev
 
 	if (secondPlayerSeatIndex.value() == Constants::Lobby::QueueSeat)
 	{
-		auto secondPlayerQueueIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(secondPlayer.getId());
+		auto secondPlayerQueueIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(secondPlayer.getId());
 		if (!secondPlayerQueueIndexOpt)
 		{
 			resyncLayer();

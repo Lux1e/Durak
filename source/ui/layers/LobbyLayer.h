@@ -21,7 +21,7 @@ struct SeatPositionsSwappedEvent;
 class LobbyLayer : public ILayer
 {
 public:
-	LobbyLayer(GameContext& gameContext, sf::Vector2f size, const ClientLobbyState& clientLobbyState, const ClientContext& context) : ILayer(gameContext, size), m_clientLobbyState(clientLobbyState), m_clientContext(context)
+	LobbyLayer(GameContext& gameContext, sf::Vector2f size, const ClientLobbyState& clientLobbyState, const ClientContext& context) : ILayer(gameContext, size), m_clientLobbyState(&clientLobbyState), m_clientContext(context)
 	{
 		init();
 	}
@@ -55,7 +55,7 @@ private:
 	void subscribeAll();
 
 
-	const ClientLobbyState& m_clientLobbyState;
+	const ClientLobbyState* m_clientLobbyState;
 	const ClientContext& m_clientContext;
 
 	DragController m_dragController;
