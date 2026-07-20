@@ -5,6 +5,8 @@
 #include "game/Game.h"
 #include "resources/Fonts.h"
 #include "resources/CursorsImages.h"
+#include "ui/widgets/ListBox.h"
+#include "ui/widgets/TextBox.h"
 
 
 
@@ -28,7 +30,7 @@ int main(int argc, char* argv[])
 	window.setFramerateLimit(300);
 	sf::Clock deltaClock;
 
-	Game game(args.profileIndex, window);
+	Game game(args.profileIndex, window); 
 
 	/////////////////////////////////////////////////////////////////////////////////
 	auto& textures = game.getTextureManager();

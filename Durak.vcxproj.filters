@@ -132,6 +132,9 @@
     <ClCompile Include="source\core\animation\Easing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\ui\panels\LobbyTopLeftPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\game\CardData.h">
@@ -525,6 +528,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\core\Concepts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\widgets\ListBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\widgets\Dropdown.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\panels\LobbyTopLeftPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

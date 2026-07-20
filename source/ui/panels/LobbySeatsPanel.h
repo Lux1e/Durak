@@ -9,7 +9,7 @@
 class LobbySeatsPanel : public Panel
 {
 public:
-	LobbySeatsPanel(sf::Vector2f size = { 160.0f, 90.0f }, sf::Vector2f position = { 0.0f, 0.0f }) : Panel(size, position) { m_currentPlayersPerGame == Constants::Lobby::MinPlayersPerGame; }
+	LobbySeatsPanel(sf::Vector2f size = { 160.0f, 90.0f }, sf::Vector2f position = { 0.0f, 0.0f }) : Panel(size, position), m_currentPlayersPerGame(Constants::Lobby::MinPlayersPerGame) {}
 
 	void init(const UIElement& table, const sf::Vector2f& seatPositionGlobalSize, uint32_t currentPlayersPerGame)
 	{

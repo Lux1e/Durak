@@ -29,7 +29,7 @@ public:
 	UIElement(UIElement&&) = default;
 	UIElement& operator=(UIElement&&) = default;
 
-	virtual ~UIElement() = 0;
+	virtual ~UIElement() = default;
 
 
 	virtual void update(float dt);
@@ -39,6 +39,7 @@ public:
 	sf::Vector2f getGlobalGeometricCenter() const;
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
+	void setParent(UIElement& parent);
 	UIElement* getParent();
 	const UIElement* getParent() const;
 
@@ -65,8 +66,8 @@ public:
 	sf::Vector2f getGlobalSize() const;
 
 	UIElement& addChild(std::unique_ptr<UIElement> child);
-	void eraseChild(std::unique_ptr<UIElement>& child);
 	void eraseChild(UIElement& child);
+	void cleanUp();
 
 	std::vector<std::unique_ptr<UIElement>>& getAllChildren();
 	const std::vector<std::unique_ptr<UIElement>>& getAllChildren() const;
@@ -101,7 +102,9 @@ protected:
 	sf::Vector2f m_size;
 
 	UIElement* m_parent = nullptr;
+
 	std::vector<std::unique_ptr<UIElement>> m_children;
+	std::vector<UIElement*> m_childrenToDelete;
 
 	std::function<bool(sf::Vector2f localPoint)> m_resolveHit;
 
@@ -117,10 +120,12 @@ protected:
 		}
 	}
 
-	virtual void drawSelf(sf::RenderTarget& target, sf::RenderStates states) const {}
+	virtual void drawSelf(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 	virtual bool resolveHit(sf::Vector2f localPoint) const;
 
+	virtual void onChildAdded(UIElement& child) {};
 	virtual void onSizeChanged(sf::Vector2f ratio) {};
+	virtual void onChildVisibilityChanged(UIElement& child) {};
 
 private:
 	AnimationState animationState;

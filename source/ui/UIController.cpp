@@ -38,6 +38,7 @@ void UIController::defer()
 
 void UIController::cleanUp()
 {
+	currentScene->cleanUp();
 	cleanSceneToDelete();
 }
 
@@ -61,6 +62,7 @@ sf::Vector2f UIController::getWindowSize() const
 
 void UIController::setScene(std::unique_ptr<IScene> scene)
 {
+	assert(!m_sceneToDelete);
 	m_sceneToDelete = std::move(currentScene);
 	currentScene = std::move(scene);
 	currentScene->init(m_windowSize);

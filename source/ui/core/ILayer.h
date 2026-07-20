@@ -100,7 +100,35 @@ public:
 		m_underMouseElement = nullptr;
 	}
 
-	Panel& addPanel(std::unique_ptr<Panel> panel) { m_panels.push_back(std::move(panel)); return *m_panels.back().get(); }
+	Panel& addPanel(std::unique_ptr<Panel> panel)
+	{
+		m_panels.push_back(std::move(panel));
+		return *m_panels.back().get();
+	}
+
+	void erasePanel(Panel& panel)
+	{
+		m_panelsToDelete.emplace_back(&panel);
+	}
+
+	void cleanUp()
+	{
+		for (auto& panel : m_panels)
+			panel->cleanUp();
+
+		for (const auto& panelToDelete : m_panelsToDelete)
+		{
+			auto it = std::find_if(m_panels.begin(), m_panels.end(), [panelToDelete](const auto& panel)
+				{
+					return panel.get() == panelToDelete;
+				});
+
+			if (it != m_panels.end())
+				m_panels.erase(it);
+		}
+
+		m_panelsToDelete.clear();
+	}
 
 	void setVisible(bool value) { m_isVisible = value; }
 	bool isVisible() const { return m_isVisible; }
@@ -116,6 +144,7 @@ protected:
 	bool m_isModal;
 
 	std::vector<std::unique_ptr<Panel>> m_panels;
+	std::vector<Panel*> m_panelsToDelete;
 
 	UIElement* m_underMouseElement;
 

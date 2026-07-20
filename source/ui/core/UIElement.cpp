@@ -3,9 +3,6 @@
 
 
 
-UIElement::~UIElement() {}
-
-
 void UIElement::update(float dt)
 {
 	updateAnimations(dt);
@@ -42,9 +39,17 @@ void UIElement::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 	drawSelf(target, states);
 	for (const auto& child : m_children)
-		child->draw(target, states);
+	{
+		if (child)
+			child->draw(target, states);
+	}
 }
 
+
+void UIElement::setParent(UIElement& parent)
+{
+	m_parent = &parent;
+}
 
 UIElement* UIElement::getParent()
 {
@@ -81,8 +86,11 @@ UIElement* UIElement::hitTest(sf::Vector2f globalPoint)
 	{
 		for (auto it = m_children.rbegin(); it != m_children.rend(); ++it)
 		{
-			if (auto hit = it->get()->hitTest(globalPoint))
-				return hit;
+			if (it->get())
+			{
+				if (auto hit = it->get()->hitTest(globalPoint))
+					return hit;
+			}
 		}
 	}
 
@@ -180,13 +188,16 @@ void UIElement::setSize(sf::Vector2f size)
 		m_size.y > 0 ? getOrigin().y / m_size.y : 0.0f
 	};
 
-	m_size = size;
+	m_size = size; //stack overflow???
 	setOrigin({ size.x * originRatio.x, size.y * originRatio.y });
 
 	for (auto& child : m_children)
 	{
-		child->setPosition({ child->getPosition().x * ratio.x, child->getPosition().y * ratio.y });
-		child->setSize({ child->getSize().x * ratio.x, child->getSize().y * ratio.y });
+		if (child)
+		{
+			child->setPosition({ child->getPosition().x * ratio.x, child->getPosition().y * ratio.y });
+			child->setSize({ child->getSize().x * ratio.x, child->getSize().y * ratio.y });
+		}
 	}
 
 	onSizeChanged(ratio);
@@ -207,32 +218,33 @@ UIElement& UIElement::addChild(std::unique_ptr<UIElement> child)
 {
 	child->m_parent = this;
 	m_children.push_back(std::move(child));
+	onChildAdded(*m_children.back());
 
 	return *m_children.back();
 }
 
-void UIElement::eraseChild(std::unique_ptr<UIElement>& child)
-{
-	assert(!m_children.empty());
-
-	auto begin = m_children.data();
-
-	assert(&child >= begin);
-	assert(&child < begin + m_children.size());
-
-	m_children.erase(m_children.begin() + (&child - begin));
-}
-
 void UIElement::eraseChild(UIElement& child)
 {
-	auto it = std::find_if(m_children.begin(), m_children.end(), [&](const auto& ptr)
-		{
-			return ptr.get() == &child;
-		});
+	m_childrenToDelete.emplace_back(&child);
+}
 
-	assert(it != m_children.end());
+void UIElement::cleanUp()
+{
+	for (auto& child : m_children)
+		child->cleanUp();
 
-	m_children.erase(it);
+	for (const auto& childToDelete : m_childrenToDelete)
+	{
+		auto it = std::find_if(m_children.begin(), m_children.end(), [childToDelete](const auto& child)
+			{
+				return child.get() == childToDelete;
+			});
+
+		if (it != m_children.end())
+			m_children.erase(it);
+	}
+
+	m_childrenToDelete.clear();
 }
 
 
@@ -250,6 +262,8 @@ std::vector<std::unique_ptr<UIElement>>& UIElement::getAllChildren()
 void UIElement::setVisible(bool value)
 {
 	m_isVisible = value;
+	if (m_parent)
+		m_parent->onChildVisibilityChanged(*this);
 }
 
 bool UIElement::isVisible() const

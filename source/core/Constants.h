@@ -56,6 +56,9 @@ namespace Constants
 
 		constexpr float FastMoveAnimationTime = 0.1f;
 		constexpr float FastRotateAnimationTime = 0.1f;
+
+		constexpr float LongMoveAnimationTime = 0.5f;
+		constexpr float LongRotateAnimationTime = 0.5f;
 	}
 
 	namespace Network

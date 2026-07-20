@@ -13,25 +13,28 @@ public:
 	}
 
 
-	std::optional<UIElement*> getBackgroundElement()
+	UIElement* getBackgroundElement()
 	{
 		if (m_getBackgroundElement)
-			return m_getBackgroundElement();
+			return m_getBackgroundElement(*this);
 
-		return std::nullopt;
+		return nullptr;
 	}
 
-	std::optional<UIElement*> getTextElement()
+	UIElement* getTextElement()
 	{
 		if (m_getTextElement)
-			return m_getTextElement();
+			return m_getTextElement(*this);
 
-		return std::nullopt;
+		return nullptr;
 	}
 
 private:
 	friend class ButtonBuilder;
 
-	std::function<UIElement* ()> m_getBackgroundElement;
-	std::function<UIElement* ()> m_getTextElement;
+	std::function<UIElement* (Button&)> m_getBackgroundElement;
+	std::function<UIElement* (Button&)> m_getTextElement;
+
+
+	void drawSelf(sf::RenderTarget& target, sf::RenderStates states) const override {}
 };

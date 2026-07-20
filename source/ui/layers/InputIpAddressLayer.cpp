@@ -63,18 +63,18 @@ void InputIpAddressLayer::initIpPanel(Panel& ipPanel)
 		{
 			assert(m_connectButton);
 
-			if (auto bgOpt = m_connectButton->getBackgroundElement())
+			if (auto* backgroundPtr = m_connectButton->getBackgroundElement())
 			{
-				RectangleElement& bg = static_cast<RectangleElement&>(*bgOpt.value());
+				RectangleElement& bg = static_cast<RectangleElement&>(*backgroundPtr);
 				if (state)
 					bg.shape().setFillColor(connectButtonStyle.background.colors.normal);
 				else
 					bg.shape().setFillColor(passiveButtonColorBG);
 			}
 
-			if (auto stringOpt = m_connectButton->getTextElement())
+			if (auto* stringPtr = m_connectButton->getTextElement())
 			{
-				TextElement& string = static_cast<TextElement&>(*stringOpt.value());
+				TextElement& string = static_cast<TextElement&>(*stringPtr);
 				if (state)
 					string.text().setFillColor(connectButtonStyle.text.colors.normal);
 				else

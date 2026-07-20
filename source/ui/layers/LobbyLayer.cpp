@@ -12,10 +12,12 @@
 #include "../../states/client/ClientLobbyState.h"
 #include "../panels/LobbyQueuePanel.h"
 #include "../panels/LobbySeatsPanel.h"
+#include "../panels/LobbyTopLeftPanel.h"
 #include "../elements/RectangleElement.h"
 #include "../elements/RoundedRectangleElement.h"
 #include "../elements/SpriteElement.h"
 #include "../widgets/Button.h"
+#include "../widgets/Dropdown.h"
 #include "../ButtonBuilder.h"
 #include "../LobbyPlayerView.h"
 #include "../../game/events/requests/SeatPositionsChangeRequestEvent.h"
@@ -28,8 +30,6 @@
 
 void LobbyLayer::init()
 {
-	assert(m_clientLobbyState);
-
 	subscribeAll();
 
 	sf::Vector2f backgroundOffset = MathUtils::round({ 0.0f, m_size.y * 0.10f });
@@ -47,8 +47,10 @@ void LobbyLayer::init()
 	m_queuePanel = &static_cast<LobbyQueuePanel&>(addPanel(std::make_unique<LobbyQueuePanel>()));
 	m_arrowRotatePanel = &addPanel(std::make_unique<Panel>());
 	m_tablePanel = &addPanel(std::make_unique<Panel>());
-	m_bottomButtonsPanel = &addPanel(std::make_unique<Panel>());
 	m_chatPanel = &addPanel(std::make_unique<Panel>());
+	m_bottomButtonsPanel = &addPanel(std::make_unique<Panel>());
+	m_settingsPanel = &addPanel(std::make_unique<Panel>());
+	m_popupPanel = &addPanel(std::make_unique<Panel>());
 	m_playersPanel = &addPanel(std::make_unique<Panel>());
 
 
@@ -75,6 +77,10 @@ void LobbyLayer::init()
 	m_tablePanel->setPosition({ m_arrowRotatePanel->getTopRightPosition().x, m_queuePanel->getTopRightPosition().y });
 	m_tablePanel->setSize({ m_chatPanel->getTopRightPosition().x - m_tablePanel->getPosition().x, m_queuePanel->getSize().y });
 
+	m_settingsPanel->setPosition({ m_tablePanel->getTopRightPosition().x + m_panelsOffset.x, m_tablePanel->getTopRightPosition().y });
+	m_settingsPanel->setSize({ maxPosition.x - m_settingsPanel->getTopLeftPosition().x, m_queuePanel->getSize().y });
+
+	m_popupPanel->setSize(m_size);
 	m_playersPanel->setSize(m_size);
 
 
@@ -85,9 +91,13 @@ void LobbyLayer::init()
 	initArrowRotatePanel();
 	initTablePanel();
 
-	initPlayersPanel();
 	initChatPanel();
 	initBottomButtonsPanel();
+	initSettingsPanel();
+	initPopupPanel();
+	initPlayersPanel();
+
+	initTestPanel();
 }
 
 
@@ -109,237 +119,11 @@ void LobbyLayer::initTopPanel()
 	RoundedRectangleElement& background = static_cast<RoundedRectangleElement&>(m_topPanel->addChild(std::make_unique<RoundedRectangleElement>(m_topPanel->getSize())));
 	background.shape().setFillColor({ 60, 60, 80, 255 });
 
-	initTopLeftPanel();
-}
-
-void LobbyLayer::initTopLeftPanel()
-{
-	m_topLeftPanel = &static_cast<Panel&>(m_topPanel->addChild(std::make_unique<Panel>()));
+	m_topLeftPanel = &static_cast<LobbyTopLeftPanel&>(m_topPanel->addChild(std::make_unique<LobbyTopLeftPanel>()));
 	m_topLeftPanel->setSize({ m_queuePanel->getSize().x, m_topPanel->getSize().y * 0.8f });
 	m_topLeftPanel->setPosition({ m_screenOffset.x, m_topPanel->getSize().y * 0.1f });
 
-	RoundedRectangleElement& topLeftBackground = static_cast<RoundedRectangleElement&>(m_topLeftPanel->addChild(std::make_unique<RoundedRectangleElement>(m_topLeftPanel->getSize())));
-	topLeftBackground.shape().setCornerRatio(0.5f);
-	topLeftBackground.shape().setFillColor({ 10, 10, 10, 100 });
-
-
-	m_topLeftButtonsLocalSize = MathUtils::round({ topLeftBackground.getSize().y, topLeftBackground.getSize().y });
-	float buttonOffset = std::round(topLeftBackground.getSize().x / 20.0f);
-	VisualComponent buttonsComponents;
-	buttonsComponents.colors.normal = { 175, 175, 200, 255 };
-	m_topLeftButtonsNormalColor = buttonsComponents.colors.normal;
-	buttonsComponents.colors.hovered = { 210, 210, 0, 255 };
-	buttonsComponents.colors.pressed = UIUtils::scaleColor(buttonsComponents.colors.hovered, 0.75f);
-
-	Button& settingsButton = static_cast<Button&>(m_topLeftPanel->addChild(std::make_unique<Button>()));
-	settingsButton.setSize(m_topLeftButtonsLocalSize);
-	settingsButton.setOrigin({ settingsButton.getGeometricCenter().x, 0.0f });
-	settingsButton.setPosition({ std::round(m_topLeftPanel->getSize().x * 0.5f), 0.0f });
-
-	SpriteElement& settingsSprite = static_cast<SpriteElement&>(settingsButton.addChild(std::make_unique<SpriteElement>(m_gameContext.textureManager.getTexture("assets/textures/ui/gear.png"))));
-	settingsSprite.setSize(m_topLeftButtonsLocalSize);
-	settingsSprite.setOrigin(settingsSprite.getGeometricCenter());
-	settingsSprite.setPosition(settingsSprite.getGeometricCenter());
-	settingsSprite.sprite().setColor(buttonsComponents.colors.normal);
-
-
-	Button& exitButton = static_cast<Button&>(m_topLeftPanel->addChild(std::make_unique<Button>()));
-	exitButton.setSize(m_topLeftButtonsLocalSize);
-	exitButton.setOrigin({ exitButton.getSize().x, 0.0f });
-	exitButton.setPosition({ settingsButton.getTopLeftPosition().x - buttonOffset, 0.0f });
-
-	SpriteElement& exitSprite = static_cast<SpriteElement&>(exitButton.addChild(std::make_unique<SpriteElement>(m_gameContext.textureManager.getTexture("assets/textures/ui/exitLeft.png"))));
-	exitSprite.setSize(exitButton.getSize());
-	exitSprite.setOrigin(exitSprite.getGeometricCenter());
-	exitSprite.setPosition(exitButton.getGeometricCenter());
-	exitSprite.sprite().setColor(buttonsComponents.colors.normal);
-
-
-	exitButton.setOnHover([exitSpritePtr = &exitSprite, buttonsComponents](UIInteractive& element)
-		{
-			exitSpritePtr->sprite().setColor(buttonsComponents.colors.hovered);
-		});
-
-	exitButton.setOnHoverEnd([exitSpritePtr = &exitSprite, buttonsComponents](UIInteractive& element)
-		{
-			exitSpritePtr->sprite().setColor(buttonsComponents.colors.normal);
-		});
-
-	exitButton.setOnPressed([exitSpritePtr = &exitSprite, buttonsComponents](UIInteractive& element)
-		{
-			exitSpritePtr->sprite().setColor(buttonsComponents.colors.pressed);
-		});
-
-	exitButton.setOnReleased([exitSpritePtr = &exitSprite, buttonsComponents](UIInteractive& element, bool isHit)
-		{
-			if (isHit)
-				exitSpritePtr->sprite().setColor(buttonsComponents.colors.hovered);
-			else
-				exitSpritePtr->sprite().setColor(buttonsComponents.colors.normal);
-		});
-
-	exitButton.setOnClick([this]()
-		{
-			m_gameContext.ES.publish(ExitRequestEvent{});
-		});
-
-
-	settingsButton.setOnHover([settingsSpritePtr = &settingsSprite, buttonsComponents](UIInteractive& element)
-		{
-			if (!settingsSpritePtr->isAnimating())
-			{
-				sf::Angle startAngle = settingsSpritePtr->getRotation();
-				sf::Angle endAngle = startAngle + sf::degrees(90.0f);
-
-				settingsSpritePtr->addAnimation<RotateAnimation>([settingsSpritePtr](sf::Angle angle) { settingsSpritePtr->setRotation(angle); },
-					EaseType::InOutCubic, startAngle, endAngle, Constants::Animations::StandardRotateAnimationTime);
-			}
-
-			settingsSpritePtr->sprite().setColor(buttonsComponents.colors.hovered);
-		});
-
-	settingsButton.setOnHoverEnd([settingsSpritePtr = &settingsSprite, buttonsComponents](UIInteractive& element)
-		{
-			settingsSpritePtr->sprite().setColor(buttonsComponents.colors.normal);
-		});
-
-	settingsButton.setOnPressed([settingsSpritePtr = &settingsSprite, buttonsComponents](UIInteractive& element)
-		{
-			settingsSpritePtr->sprite().setColor(buttonsComponents.colors.pressed);
-		});
-
-	settingsButton.setOnReleased([settingsSpritePtr = &settingsSprite, buttonsComponents](UIInteractive& element, bool isHit)
-		{
-			if (isHit)
-				settingsSpritePtr->sprite().setColor(buttonsComponents.colors.hovered);
-			else
-				settingsSpritePtr->sprite().setColor(buttonsComponents.colors.normal);
-		});
-
-	settingsButton.setOnClick([]() {}); //to do
-
-
-	m_lockButtonLocalPosition = { settingsButton.getTopRightPosition().x + buttonOffset, 0.0f };
-	initLockButton();
-}
-
-void LobbyLayer::initLockButton()
-{
-	VisualComponent lockButtonComponents;
-	VisualComponent unlockButtonComponents;
-
-	lockButtonComponents.colors.normal = m_topLeftButtonsNormalColor;
-	unlockButtonComponents.colors.normal = m_topLeftButtonsNormalColor;
-	lockButtonComponents.colors.hovered = sf::Color::Red;
-	unlockButtonComponents.colors.hovered = sf::Color::Green;
-	lockButtonComponents.colors.pressed = UIUtils::scaleColor(lockButtonComponents.colors.hovered, 0.6f);
-	unlockButtonComponents.colors.pressed = UIUtils::scaleColor(unlockButtonComponents.colors.hovered, 0.6f);
-
-	Button& lockLobbyButton = static_cast<Button&>(m_topLeftPanel->addChild(std::make_unique<Button>()));
-	lockLobbyButton.setSize(m_topLeftButtonsLocalSize);
-	lockLobbyButton.setOrigin({ 0.0f, 0.0f });
-	lockLobbyButton.setPosition(m_lockButtonLocalPosition);
-
-	SpriteElement& lockSprite = static_cast<SpriteElement&>(lockLobbyButton.addChild(std::make_unique<SpriteElement>(m_gameContext.textureManager.getTexture("assets/textures/ui/locked.png"))));
-	lockSprite.setSize(lockLobbyButton.getSize());
-	lockSprite.setOrigin(lockSprite.getGeometricCenter());
-	lockSprite.setPosition(lockLobbyButton.getGeometricCenter());
-	lockSprite.sprite().setColor(m_topLeftButtonsNormalColor);
-
-	SpriteElement& unlockSprite = static_cast<SpriteElement&>(lockLobbyButton.addChild(std::make_unique<SpriteElement>(m_gameContext.textureManager.getTexture("assets/textures/ui/unlocked2.png"))));
-	unlockSprite.setSize(lockLobbyButton.getSize());
-	unlockSprite.setOrigin(unlockSprite.getGeometricCenter());
-	unlockSprite.setPosition(lockLobbyButton.getGeometricCenter());
-	unlockSprite.sprite().setColor(m_topLeftButtonsNormalColor);
-
-	m_clientLobbyState->isLobbyOpen() ? lockSprite.setVisible(false) : unlockSprite.setVisible(false);
-
-	lockLobbyButton.setOnHover([this, lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element)
-		{
-			if (lockSpritePtr->isVisible())
-			{
-				lockSpritePtr->setVisible(false);
-				unlockSpritePtr->setVisible(true);
-
-				unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.hovered);
-			}
-
-			else
-			{
-				lockSpritePtr->setVisible(true);
-				unlockSpritePtr->setVisible(false);
-
-				lockSpritePtr->sprite().setColor(lockButtonComponents.colors.hovered);
-			}
-		});
-
-	lockLobbyButton.setOnHoverEnd([lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element)
-		{
-			if (lockSpritePtr->isVisible())
-			{
-				lockSpritePtr->setVisible(false);
-				unlockSpritePtr->setVisible(true);
-			}
-
-			else
-			{
-				lockSpritePtr->setVisible(true);
-				unlockSpritePtr->setVisible(false);
-			}
-
-			lockSpritePtr->sprite().setColor(lockButtonComponents.colors.normal);
-			unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.normal);
-		});
-
-	lockLobbyButton.setOnPressed([lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element)
-		{
-			if (lockSpritePtr->isVisible())
-				lockSpritePtr->sprite().setColor(lockButtonComponents.colors.pressed);
-			else
-				unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.pressed);
-		});
-
-	lockLobbyButton.setOnReleased([lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element, bool isHit)
-		{
-			if (isHit)
-			{
-				if (lockSpritePtr->isVisible())
-				{
-					lockSpritePtr->setVisible(false);
-					unlockSpritePtr->setVisible(true);
-
-					lockSpritePtr->sprite().setColor(lockButtonComponents.colors.normal);
-					unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.hovered);
-				}
-
-				else
-				{
-					lockSpritePtr->setVisible(true);
-					unlockSpritePtr->setVisible(false);
-
-					unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.normal);
-					lockSpritePtr->sprite().setColor(lockButtonComponents.colors.hovered);
-				}
-			}
-
-			else
-			{
-				lockSpritePtr->sprite().setColor(lockButtonComponents.colors.normal);
-				unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.normal);
-			}
-		});
-
-	lockLobbyButton.setOnClick([]() {}); // to do
-
-
-	if (m_clientContext.localRole == ClientRole::Regular)
-	{
-		assert(m_clientContext.localId == m_clientLobbyState->getHostId());
-
-		lockLobbyButton.blockHovered();
-		lockLobbyButton.blockPressed();
-		lockLobbyButton.blockClick();
-	}
+	m_topLeftPanel->init(m_clientLobbyState, m_gameContext, m_clientContext);
 }
 
 void LobbyLayer::initArrowRotatePanel()
@@ -353,8 +137,6 @@ void LobbyLayer::initArrowRotatePanel()
 
 void LobbyLayer::initTablePanel()
 {
-	assert(m_clientLobbyState);
-
 	RoundedRectangleElement& tableBackground = static_cast<RoundedRectangleElement&>(m_tablePanel->addChild(std::make_unique<RoundedRectangleElement>(m_tablePanel->getSize())));
 	tableBackground.shape().setFillColor({ 25, 25, 40, 255 });
 
@@ -365,12 +147,8 @@ void LobbyLayer::initTablePanel()
 	table.setPosition(tableBackground.getGeometricCenter());
 	table.shape().setFillColor(sf::Color::Green);
 
-	uint32_t currentSeatPositionSize = Constants::Lobby::MinPlayersPerGame;
-	if (m_clientLobbyState)
-		currentSeatPositionSize = m_clientLobbyState->getPlayersPerGame();
-
 	m_seatsPanel = &static_cast<LobbySeatsPanel&>(m_tablePanel->addChild(std::make_unique<LobbySeatsPanel>(m_tablePanel->getSize())));
-	m_seatsPanel->init(table, m_lobbyPlayerViewGlobalSize, m_clientLobbyState->getPlayersPerGame());
+	m_seatsPanel->init(table, m_lobbyPlayerViewGlobalSize, m_clientLobbyState.getPlayersPerGame());
 }
 
 void LobbyLayer::initChatPanel() //to do
@@ -412,12 +190,41 @@ void LobbyLayer::initBottomButtonsPanel()
 	m_startButton->setPosition({ panelSize.x * 0.5f, panelSize.y - totalOffsetY / 3.0f });
 }
 
+void LobbyLayer::initSettingsPanel()
+{
+	m_settingsPanel->setTransparentToInput(true);
+
+	RectangleElement& background = static_cast<RectangleElement&>(m_settingsPanel->addChild(std::make_unique<RectangleElement>(m_settingsPanel->getSize())));
+	background.shape().setFillColor({ 20, 20, 35, 255 });
+
+	sf::Vector2f localOffset = { background.getSize().x * 0.05f, background.getSize().y * 0.05f };
+
+	TextElement& settings = static_cast<TextElement&>(m_settingsPanel->addChild(std::make_unique<TextElement>(Fonts::ArialBD, "Settings")));
+	settings.setSize({ background.getSize().x * 0.6f, background.getSize().y * 0.06f });
+	settings.setOrigin({ settings.getSize().x * 0.5f, 0.0f });
+	settings.setPosition({ background.getSize().x * 0.5f, localOffset.y });
+
+	Panel& localSettingsPanel = static_cast<Panel&>(m_settingsPanel->addChild(std::make_unique<Panel>()));
+	localSettingsPanel.setSize({ m_settingsPanel->getSize().x - localOffset.x * 2, m_settingsPanel->getSize().y - settings.getBottomLeftPosition().y - localOffset.y * 2 });
+	localSettingsPanel.setOrigin({ localSettingsPanel.getSize().x * 0.5f, 0.0f });
+}
+
+void LobbyLayer::initPopupPanel()
+{
+	m_popupPanel->setTransparentToInput(true);
+}
+
 void LobbyLayer::initPlayersPanel()
 {
 	m_playersPanel->setTransparentToInput(true);
 
-	for (const auto& [id, playerData] : m_clientLobbyState->getAllPlayersById())
-		addPlayer(id, playerData.getNickname(), playerData.getRole(), m_clientLobbyState->getPlayerSeatIndex(id).value());
+	for (const auto& [id, playerData] : m_clientLobbyState.getAllPlayersById())
+		addPlayer(id, playerData.getNickname(), playerData.getRole(), m_clientLobbyState.getPlayerSeatIndex(id).value());
+}
+
+
+void LobbyLayer::initTestPanel() // TEST PANEL
+{
 }
 
 
@@ -453,7 +260,7 @@ void LobbyLayer::addPlayer(uint32_t id, std::string nickname, ClientRole role, i
 
 	if (seatIndex == Constants::Lobby::QueueSeat)
 	{
-		if (auto seatIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(id); seatIndexOpt)
+		if (auto seatIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(id); seatIndexOpt)
 			player.setPosition(MathUtils::round(inverse.transformPoint(m_queuePanel->getPlayerGlobalSeatPositionByQueueIndex(seatIndexOpt.value()))));
 		else
 			assert(false);
@@ -479,7 +286,7 @@ void LobbyLayer::removePlayer(uint32_t id)
 void LobbyLayer::removePlayer(LobbyPlayerView& player)
 {
 	const uint32_t id = player.getId();
-	auto seatIndexOpt = m_clientLobbyState->getPlayerSeatIndex(id);
+	auto seatIndexOpt = m_clientLobbyState.getPlayerSeatIndex(id);
 	auto& children = m_playersPanel->getAllChildren();
 
 	auto itMap = m_playersById.find(id);
@@ -570,13 +377,13 @@ bool LobbyLayer::onLobbyPlayerViewDrop(LobbyPlayerView& player)
 
 	uint32_t playerId = player.getId();
 	bool inQueue = false;
-	int currentPlayerSeatIndex = m_clientLobbyState->getPlayerSeatIndex(playerId).value();
+	int currentPlayerSeatIndex = m_clientLobbyState.getPlayerSeatIndex(playerId).value();
 	std::optional<sf::Vector2f> currentPlayerGlobalSeatPosition = std::nullopt;
 
 	if (currentPlayerSeatIndex == Constants::Lobby::QueueSeat)
 	{
 		inQueue = true;
-		currentPlayerSeatIndex = static_cast<int>(m_clientLobbyState->getPlayerIndexInQueueById(playerId).value());
+		currentPlayerSeatIndex = static_cast<int>(m_clientLobbyState.getPlayerIndexInQueueById(playerId).value());
 		currentPlayerGlobalSeatPosition = m_queuePanel->getPlayerGlobalSeatPositionByQueueIndex(currentPlayerSeatIndex);
 	}
 
@@ -594,7 +401,7 @@ bool LobbyLayer::onLobbyPlayerViewDrop(LobbyPlayerView& player)
 
 		if (inQueue || seatIndex != currentPlayerSeatIndex)
 		{
-			if (auto otherPlayerIdOpt = m_clientLobbyState->getPlayerIdBySeatIndex(seatIndex))
+			if (auto otherPlayerIdOpt = m_clientLobbyState.getPlayerIdBySeatIndex(seatIndex))
 			{
 				if (canSwapPositions())
 					m_gameContext.ES.publish<SeatPositionsSwapRequestEvent>({ playerId, otherPlayerIdOpt.value() }, m_clientContext.localId);
@@ -627,7 +434,7 @@ bool LobbyLayer::canChangePosition()
 		return true;
 
 	else
-		return m_clientLobbyState->canMoveToAnotherSeat();
+		return m_clientLobbyState.canMoveToAnotherSeat();
 }
 
 bool LobbyLayer::canSwapPositions()
@@ -641,11 +448,11 @@ bool LobbyLayer::canSwapPositions()
 
 void LobbyLayer::updatePlayersSeatsInQueue()
 {
-	const std::vector<uint32_t>& ids = m_clientLobbyState->getAllPlayersIdsInQueue();
+	const std::vector<uint32_t>& ids = m_clientLobbyState.getAllPlayersIdsInQueue();
 
 	for (const auto& id : ids)
 	{
-		auto queueIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(id);
+		auto queueIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(id);
 		assert(queueIndexOpt);
 
 		sf::Vector2f playerGlobalSeatPosition = m_queuePanel->getPlayerGlobalSeatPositionByQueueIndex(queueIndexOpt.value());
@@ -684,7 +491,7 @@ void LobbyLayer::onSeatPositionsChangedEvent(const SeatPositionsChangedEvent& ev
 
 	if (event.newSeatIndex == Constants::Lobby::QueueSeat)
 	{
-		auto queueIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(event.playerId);
+		auto queueIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(event.playerId);
 		if (!queueIndexOpt)
 		{
 			resyncLayer();
@@ -714,8 +521,8 @@ void LobbyLayer::onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& ev
 	auto firstPlayerIt = m_playersById.find(event.firstPlayerId);
 	auto secondPlayerIt = m_playersById.find(event.secondPlayerId);
 
-	auto firstPlayerSeatIndex = m_clientLobbyState->getPlayerSeatIndex(event.firstPlayerId);
-	auto secondPlayerSeatIndex = m_clientLobbyState->getPlayerSeatIndex(event.secondPlayerId);
+	auto firstPlayerSeatIndex = m_clientLobbyState.getPlayerSeatIndex(event.firstPlayerId);
+	auto secondPlayerSeatIndex = m_clientLobbyState.getPlayerSeatIndex(event.secondPlayerId);
 
 	if (firstPlayerIt == m_playersById.end() || secondPlayerIt == m_playersById.end() || !firstPlayerSeatIndex || !secondPlayerSeatIndex || (firstPlayerSeatIndex == secondPlayerSeatIndex))
 	{
@@ -733,7 +540,7 @@ void LobbyLayer::onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& ev
 
 	if (firstPlayerSeatIndex.value() == Constants::Lobby::QueueSeat)
 	{
-		auto firstPlayerQueueIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(firstPlayer.getId());
+		auto firstPlayerQueueIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(firstPlayer.getId());
 		if (!firstPlayerQueueIndexOpt)
 		{
 			resyncLayer();
@@ -749,7 +556,7 @@ void LobbyLayer::onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& ev
 
 	if (secondPlayerSeatIndex.value() == Constants::Lobby::QueueSeat)
 	{
-		auto secondPlayerQueueIndexOpt = m_clientLobbyState->getPlayerIndexInQueueById(secondPlayer.getId());
+		auto secondPlayerQueueIndexOpt = m_clientLobbyState.getPlayerIndexInQueueById(secondPlayer.getId());
 		if (!secondPlayerQueueIndexOpt)
 		{
 			resyncLayer();

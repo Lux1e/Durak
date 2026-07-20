@@ -100,8 +100,8 @@ std::unique_ptr<Button> ButtonBuilder::build()
 				});
 
 
-			button.m_getBackgroundElement = [backgroundPtr]() -> UIElement* { return backgroundPtr; };
-			button.m_getTextElement = [&text]() -> UIElement* { return &text; };
+			button.m_getBackgroundElement = [backgroundPtr](Button&) -> UIElement* { return backgroundPtr; };
+			button.m_getTextElement = [&text](Button&) -> UIElement* { return &text; };
 
 			break;
 		}

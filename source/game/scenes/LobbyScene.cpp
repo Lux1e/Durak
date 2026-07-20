@@ -1,6 +1,7 @@
 #include "LobbyScene.h"
 #include "../../ui/layers/LobbyLayer.h"
 #include "../events/requests/ExitRequestEvent.h"
+#include "../events/domain/SnapshotAppliedEvent.h"
 
 
 
@@ -17,6 +18,15 @@ void LobbyScene::subscribeAll()
 
 }
 
+void LobbyScene::rebuildScene()
+{
+	init(m_size);
+}
+
+void LobbyScene::resyncScene()
+{
+	//to do
+}
 
 
 void LobbyScene::onExitRequestEvent(const ExitRequestEvent& event, const EventInitiator& initiator)
@@ -25,4 +35,13 @@ void LobbyScene::onExitRequestEvent(const ExitRequestEvent& event, const EventIn
 
 	if (m_exitLobbyLayer)
 		m_exitLobbyLayer->setVisible(true);
+}
+
+void LobbyScene::onSnapshotAppliedEvent(const SnapshotAppliedEvent& event, const EventInitiator& initiator)
+{
+	if (auto ptr = std::get_if<const ClientLobbyState*>(&event.state))
+	{
+		m_lobbyState = *ptr;
+		rebuildScene();
+	}
 }

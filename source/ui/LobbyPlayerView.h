@@ -40,4 +40,6 @@ private:
 	void initBackground();
 	void initNickname(const sf::Font& font, const std::string& nickname);
 	void initOnHover();
+
+	void drawSelf(sf::RenderTarget& target, sf::RenderStates states) const override {}
 };

@@ -196,6 +196,7 @@
     <ClCompile Include="source\resources\CursorImages.cpp" />
     <ClCompile Include="source\resources\Fonts.cpp" />
     <ClCompile Include="source\ui\LobbyPlayerView.cpp" />
+    <ClCompile Include="source\ui\panels\LobbyTopLeftPanel.cpp" />
     <ClCompile Include="source\ui\primitives\RoundedRectangleShape.cpp" />
     <ClCompile Include="source\game\scenes\TestMenuScene.cpp" />
     <ClCompile Include="source\ui\widgets\TextBox.cpp" />
@@ -302,6 +303,7 @@
     <ClInclude Include="source\ui\LobbyPlayerView.h" />
     <ClInclude Include="source\ui\panels\LobbyQueuePanel.h" />
     <ClInclude Include="source\ui\panels\LobbySeatsPanel.h" />
+    <ClInclude Include="source\ui\panels\LobbyTopLeftPanel.h" />
     <ClInclude Include="source\ui\styles\ButtonStyle.h" />
     <ClInclude Include="source\ui\styles\ButtonType.h" />
     <ClInclude Include="source\ui\core\Panel.h" />
@@ -324,6 +326,8 @@
     <ClInclude Include="source\ui\primitives\RoundedRectangleShape.h" />
     <ClInclude Include="source\game\scenes\TestMenuScene.h" />
     <ClInclude Include="source\core\scene\IScene.h" />
+    <ClInclude Include="source\ui\widgets\Dropdown.h" />
+    <ClInclude Include="source\ui\widgets\ListBox.h" />
     <ClInclude Include="source\ui\widgets\TextBox.h" />
     <ClInclude Include="source\ui\UIController.h" />
     <ClInclude Include="source\ui\core\UIElement.h" />

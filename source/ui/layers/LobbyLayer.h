@@ -12,6 +12,7 @@ class Panel;
 class Button;
 class LobbyQueuePanel;
 class LobbySeatsPanel;
+class LobbyTopLeftPanel;
 struct SeatPositionsChangedEvent;
 struct SeatPositionsSwappedEvent;
 
@@ -20,7 +21,7 @@ struct SeatPositionsSwappedEvent;
 class LobbyLayer : public ILayer
 {
 public:
-	LobbyLayer(GameContext& gameContext, sf::Vector2f size, const ClientLobbyState& clientLobbyState, const ClientContext& context) : ILayer(gameContext, size), m_clientLobbyState(&clientLobbyState), m_clientContext(context)
+	LobbyLayer(GameContext& gameContext, sf::Vector2f size, const ClientLobbyState& clientLobbyState, const ClientContext& context) : ILayer(gameContext, size), m_clientLobbyState(clientLobbyState), m_clientContext(context)
 	{
 		init();
 	}
@@ -37,18 +38,24 @@ private:
 
 	void initBackgroundPanel(sf::Vector2f backgroundOffset);
 	void initTopPanel();
-	void initTopLeftPanel();
-	void initLockButton();
 	void initArrowRotatePanel();
 	void initTablePanel();
 	void initChatPanel();
 	void initBottomButtonsPanel();
+	void initSettingsPanel();
+	void initPopupPanel();
 	void initPlayersPanel();
+
+	//FOR TESTS:
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	void initTestPanel();
+	Panel* m_testPanel = nullptr;
+	/////////////////////////////////////////////////////////////////////////////////////////////
 
 	void subscribeAll();
 
 
-	const ClientLobbyState* m_clientLobbyState;
+	const ClientLobbyState& m_clientLobbyState;
 	const ClientContext& m_clientContext;
 
 	DragController m_dragController;
@@ -57,13 +64,15 @@ private:
 
 	Panel* m_backgroundPanel = nullptr;
 	Panel* m_topPanel = nullptr;
-	Panel* m_topLeftPanel = nullptr;
+	LobbyTopLeftPanel* m_topLeftPanel = nullptr;
 	LobbyQueuePanel* m_queuePanel = nullptr;
 	Panel* m_arrowRotatePanel = nullptr;
 	Panel* m_tablePanel = nullptr;
 	LobbySeatsPanel* m_seatsPanel = nullptr;
 	Panel* m_chatPanel = nullptr;
 	Panel* m_bottomButtonsPanel = nullptr;
+	Panel* m_settingsPanel = nullptr;
+	Panel* m_popupPanel = nullptr;
 	Panel* m_playersPanel = nullptr;
 
 
@@ -71,10 +80,6 @@ private:
 	sf::Vector2f m_panelsOffset;
 
 	sf::Vector2f m_lobbyPlayerViewGlobalSize;
-
-	sf::Vector2f m_lockButtonLocalPosition;
-	sf::Vector2f m_topLeftButtonsLocalSize;
-	sf::Color m_topLeftButtonsNormalColor;
 
 	Button* m_readyButton;
 	Button* m_startButton;

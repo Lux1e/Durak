@@ -46,5 +46,8 @@ private:
 
 	bool m_isEmpty;
 
+
+	void drawSelf(sf::RenderTarget& target, sf::RenderStates states) const override {}
+
 	void updatePlaceholder();
 };

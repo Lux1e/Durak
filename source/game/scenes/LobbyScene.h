@@ -5,6 +5,7 @@
 
 class ClientLobbyState;
 struct ExitRequestEvent;
+struct SnapshotAppliedEvent;
 
 
 
@@ -22,6 +23,9 @@ public:
 private:
 	void subscribeAll() override;
 
+	void rebuildScene();
+	void resyncScene();
+
 	const ClientLobbyState* m_lobbyState;
 	const ClientContext& m_localContext;
 
@@ -31,4 +35,5 @@ private:
 	ILayer* m_exitLobbyLayer = nullptr;
 
 	void onExitRequestEvent(const ExitRequestEvent& event, const EventInitiator& initiator);
+	void onSnapshotAppliedEvent(const SnapshotAppliedEvent& event, const EventInitiator& initiator);
 };
