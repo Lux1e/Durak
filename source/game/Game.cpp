@@ -25,6 +25,7 @@ void Game::init(std::optional<int> profileIndex)
 	TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(0, "Player", ClientRole::Host), 0);
 	TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(1, "Player1", ClientRole::Regular), 1);
 	TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(2, "Player2", ClientRole::Regular), -1);
+	TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(3, "Player3", ClientRole::Regular), -1);
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

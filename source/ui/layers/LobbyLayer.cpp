@@ -248,7 +248,10 @@ void LobbyLayer::updatePlayersTablePositions()
 		auto seatIndex = m_clientLobbyState->getPlayerSeatIndex(it->second->getId());
 		assert(seatIndex);
 
-		it->second->setPosition(m_seatsPanel->getGlobalSeatPositionBySeatIndex(*seatIndex));
+		LobbyPlayerView* playerPtr = it->second;
+
+		applyMoveAnimationToPlayer<MoveAnimation>(*playerPtr, [playerPtr](sf::Vector2f pos) { playerPtr->setPosition(pos); },
+			EaseType::InOutCubic, playerPtr->getPosition(), m_seatsPanel->getGlobalSeatPositionBySeatIndex(*seatIndex), Constants::Animations::StandardMoveAnimationTime);
 	}
 }
 
