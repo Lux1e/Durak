@@ -25,6 +25,7 @@
 #include "../../game/events/requests/SeatPositionsSwapRequestEvent.h"
 #include "../../game/events/domain/SeatPositionsChangedEvent.h"
 #include "../../game/events/domain/SeatPositionsSwappedEvent.h"
+#include "../../game/events/domain/PlayersPerGameChangedEvent.h"
 #include "../../game/events/requests/ExitRequestEvent.h"
 
 
@@ -216,8 +217,9 @@ void LobbyLayer::initTestPanel() // TEST PANEL
 
 void LobbyLayer::subscribeAll()
 {
-	m_gameContext.ES.subscribe<SeatPositionsChangedEvent>(this, &LobbyLayer::onSeatPositionsChangedEvent);
-	m_gameContext.ES.subscribe<SeatPositionsSwappedEvent>(this, &LobbyLayer::onSeatPositionsSwappedEvent);
+	m_gameContext.ES.subscribe<SeatPositionsChangedEvent, LobbyLayer>(this, &LobbyLayer::onSeatPositionsChangedEvent);
+	m_gameContext.ES.subscribe<SeatPositionsSwappedEvent, LobbyLayer>(this, &LobbyLayer::onSeatPositionsSwappedEvent);
+	m_gameContext.ES.subscribe<PlayersPerGameChangedEvent, LobbyLayer>(this, &LobbyLayer::onPlayersPerGameChangedEvent);
 }
 
 
@@ -570,4 +572,10 @@ void LobbyLayer::onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& ev
 	if (secondPlayerCurrentLocalPosition != secondPlayerLocalSeatPosition)
 		applyMoveAnimationToPlayer<MoveAnimation>(secondPlayer, [playerPtr = &secondPlayer](sf::Vector2f pos) { playerPtr->setPosition(pos); },
 			EaseType::InOutCubic, secondPlayerCurrentLocalPosition, secondPlayerLocalSeatPosition, Constants::Animations::StandardMoveAnimationTime);
+}
+
+
+void LobbyLayer::onPlayersPerGameChangedEvent(const PlayersPerGameChangedEvent& event, const EventInitiator& initiator)
+{
+	m_seatsPanel->updateSeatPositions(event.playersPerGame);
 }

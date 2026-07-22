@@ -18,6 +18,7 @@ class Packet;
 
 struct SeatPositionsChangeRequestEvent;
 struct SeatPositionsSwapRequestEvent;
+struct PlayersPerGameChangeRequestEvent;
 
 
 
@@ -116,4 +117,6 @@ private:
 
 	void onSeatPositionsChangeRequestEvent(const SeatPositionsChangeRequestEvent& event, const EventInitiator& initiator);
 	void onSeatPositionsSwapRequestEvent(const SeatPositionsSwapRequestEvent& event, const EventInitiator& initiator);
+
+	void onPlayersPerGameChangeRequestEvent(const PlayersPerGameChangeRequestEvent& event, const EventInitiator& initiator);
 };

@@ -15,6 +15,7 @@
 #include "../game/events/domain/SnapshotAppliedEvent.h"
 #include "../game/events/requests/SeatPositionsChangeRequestEvent.h"
 #include "../game/events/requests/SeatPositionsSwapRequestEvent.h"
+#include "../game/events/requests/PlayersPerGameChangeRequestEvent.h"
 #include "../game/events/ui/LobbyStateSyncEvent.h"
 
 
@@ -46,6 +47,7 @@ void ClientModel::subscribeAll()
 {
 	ES.subscribe<SeatPositionsChangeRequestEvent, ClientModel>(this, &ClientModel::onSeatPositionsChangeRequestEvent);
 	ES.subscribe<SeatPositionsSwapRequestEvent, ClientModel>(this, &ClientModel::onSeatPositionsSwapRequestEvent);
+	ES.subscribe<PlayersPerGameChangeRequestEvent, ClientModel>(this, &ClientModel::onPlayersPerGameChangeRequestEvent);
 }
 
 void ClientModel::registerHandlers()
@@ -436,4 +438,15 @@ void ClientModel::onSeatPositionsSwapRequestEvent(const SeatPositionsSwapRequest
 		ES.publish<SeatPositionsSwappedEvent>({ event.firstPlayerId, event.secondPlayerId }, initiatorId);
 		client.sendPacket(PacketFactory::makeSeatPositionsSwapRequestPacket(event.firstPlayerId, event.secondPlayerId));
 	}
+}
+
+
+void ClientModel::onPlayersPerGameChangeRequestEvent(const PlayersPerGameChangeRequestEvent& event, const EventInitiator& initiator)
+{
+	auto seatPositions = clientLobbyLogic.applyPlayersPerGameChange(event.playersPerGameValue);
+
+	for (const auto& seat : seatPositions)
+		ES.publish<SeatPositionsChangedEvent>({ seat.playerId, seat.toSeatIndex });
+
+	ES.publish<PlayersPerGameChangedEvent>(event.playersPerGameValue);
 }
