@@ -1,6 +1,7 @@
 #pragma once
 #include "../../core/Constants.h"
 #include "../core/Panel.h"
+#include "../../utils/MathUtils.h"
 #include "../../states/client/ClientLobbyState.h"
 #include "../elements/RoundedRectangleElement.h"
 #include "../elements/RectangleElement.h"
@@ -25,10 +26,10 @@ public:
 		sf::Vector2f tableGlobalPosition = table.getGlobalTransform().transformPoint({ 0.0f, 0.0f });
 		sf::Vector2f tableGlobalSize = table.getGlobalSize();
 
-		sf::Vector2f downGlobalPosition = { tableGlobalPosition.x + tableGlobalSize.x * 0.5f, tableGlobalPosition.y + tableGlobalSize.y };
-		sf::Vector2f leftGlobalPosition = { tableGlobalPosition.x, tableGlobalPosition.y + tableGlobalSize.y * 0.5f };
-		sf::Vector2f topGlobalPosition = { tableGlobalPosition.x + tableGlobalSize.x * 0.5f, tableGlobalPosition.y };
-		sf::Vector2f rightGlobalPosition = { tableGlobalPosition.x + tableGlobalSize.x, tableGlobalPosition.y + tableGlobalSize.y * 0.5f };
+		sf::Vector2f downGlobalPosition = MathUtils::round({ tableGlobalPosition.x + tableGlobalSize.x * 0.5f, tableGlobalPosition.y + tableGlobalSize.y });
+		sf::Vector2f leftGlobalPosition = MathUtils::round({ tableGlobalPosition.x, tableGlobalPosition.y + tableGlobalSize.y * 0.5f });
+		sf::Vector2f topGlobalPosition = MathUtils::round({ tableGlobalPosition.x + tableGlobalSize.x * 0.5f, tableGlobalPosition.y });
+		sf::Vector2f rightGlobalPosition = MathUtils::round({ tableGlobalPosition.x + tableGlobalSize.x, tableGlobalPosition.y + tableGlobalSize.y * 0.5f });
 
 		auto inverse = getGlobalTransform().getInverse();
 
@@ -52,6 +53,8 @@ public:
 
 	void updateSeatPositions(uint32_t currentPlayersPerGame)
 	{
+		m_currentPlayersPerGame = currentPlayersPerGame;
+
 		if (currentPlayersPerGame == Constants::Lobby::MaxPlayersPerGame)
 			for (auto& seat : m_seatsByLocation)
 				seat.second->setVisible(true);

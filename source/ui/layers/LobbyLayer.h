@@ -89,6 +89,8 @@ private:
 	void rebuildLayer();
 	void resyncLayer();
 
+	void updatePlayersTablePositions();
+
 
 	template <AnimationType T, typename... Args>
 	T& applyMoveAnimationToPlayer(LobbyPlayerView& player, Args&&... args)

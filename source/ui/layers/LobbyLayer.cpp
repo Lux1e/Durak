@@ -234,6 +234,25 @@ void LobbyLayer::resyncLayer() // to do
 }
 
 
+void LobbyLayer::updatePlayersTablePositions()
+{
+	for (auto& id : m_clientLobbyState->getAllPlayersIdsInSeatPositions())
+	{
+		auto it = m_playersById.find(id);
+		if (it == m_playersById.end())
+		{
+			resyncLayer();
+			return;
+		}
+
+		auto seatIndex = m_clientLobbyState->getPlayerSeatIndex(it->second->getId());
+		assert(seatIndex);
+
+		it->second->setPosition(m_seatsPanel->getGlobalSeatPositionBySeatIndex(*seatIndex));
+	}
+}
+
+
 void LobbyLayer::addPlayer(uint32_t id, std::string nickname, ClientRole role, int seatIndex)
 {
 	assert(m_playersById.find(id) == m_playersById.end());
@@ -578,4 +597,5 @@ void LobbyLayer::onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& ev
 void LobbyLayer::onPlayersPerGameChangedEvent(const PlayersPerGameChangedEvent& event, const EventInitiator& initiator)
 {
 	m_seatsPanel->updateSeatPositions(event.playersPerGame);
+	updatePlayersTablePositions();
 }

@@ -20,10 +20,10 @@ int main(int argc, char* argv[])
 	sf::ContextSettings settings;
 	settings.antiAliasingLevel = 8;
 
-	//sf::RenderWindow window(sf::VideoMode({ 960, 540 }), "Durak Online", sf::Style::Default, sf::State::Windowed, settings);
+	sf::RenderWindow window(sf::VideoMode({ 960, 540 }), "Durak Online", sf::Style::Default, sf::State::Windowed, settings);
 	//sf::RenderWindow window(sf::VideoMode({ 1920, 1080 }), "Durak Online", sf::Style::Default, sf::State::Windowed, settings);
 	//sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Durak Online", sf::Style::Default, sf::State::Fullscreen, settings);
-	sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Durak Online", sf::Style::None, sf::State::Windowed, settings);
+	//sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Durak Online", sf::Style::None, sf::State::Windowed, settings);
 
 	window.setMouseCursor(CursorsImages::GradientCursor.value());
 
