@@ -13,6 +13,7 @@ class Button;
 class LobbyQueuePanel;
 class LobbySeatsPanel;
 class LobbyTopLeftPanel;
+class LobbyTablePanel;
 struct SeatPositionsChangedEvent;
 struct SeatPositionsSwappedEvent;
 
@@ -39,7 +40,6 @@ private:
 	void initBackgroundPanel(sf::Vector2f backgroundOffset);
 	void initTopPanel();
 	void initArrowRotatePanel();
-	void initTablePanel();
 	void initChatPanel();
 	void initBottomButtonsPanel();
 	void initSettingsPanel();
@@ -67,7 +67,7 @@ private:
 	LobbyTopLeftPanel* m_topLeftPanel = nullptr;
 	LobbyQueuePanel* m_queuePanel = nullptr;
 	Panel* m_arrowRotatePanel = nullptr;
-	Panel* m_tablePanel = nullptr;
+	LobbyTablePanel* m_tablePanel = nullptr;
 	LobbySeatsPanel* m_seatsPanel = nullptr;
 	Panel* m_chatPanel = nullptr;
 	Panel* m_bottomButtonsPanel = nullptr;

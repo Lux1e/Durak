@@ -1,6 +1,7 @@
 #pragma once
 #include "../../core/Constants.h"
 #include "../core/Panel.h"
+#include "../../states/client/ClientLobbyState.h"
 #include "../elements/RoundedRectangleElement.h"
 #include "../elements/RectangleElement.h"
 
@@ -11,14 +12,14 @@ class LobbySeatsPanel : public Panel
 public:
 	LobbySeatsPanel(sf::Vector2f size = { 160.0f, 90.0f }, sf::Vector2f position = { 0.0f, 0.0f }) : Panel(size, position), m_currentPlayersPerGame(Constants::Lobby::MinPlayersPerGame) {}
 
-	void init(const UIElement& table, const sf::Vector2f& seatPositionGlobalSize, uint32_t currentPlayersPerGame)
+	void init(const UIElement& table, const sf::Vector2f& seatPositionGlobalSize, const ClientLobbyState& clientLobbyState)
 	{
-		assert(currentPlayersPerGame >= Constants::Lobby::MinPlayersPerGame && currentPlayersPerGame <= Constants::Lobby::MaxPlayersPerGame);
+		m_currentPlayersPerGame = clientLobbyState.getPlayersPerGame();
+		assert(m_currentPlayersPerGame >= Constants::Lobby::MinPlayersPerGame && m_currentPlayersPerGame <= Constants::Lobby::MaxPlayersPerGame);
 
 		setChildrenHitTest(true);
 		setTransparentToInput(true);
 
-		m_currentPlayersPerGame = currentPlayersPerGame;
 		sf::Vector2f seatPositionLocalSize = { seatPositionGlobalSize.x / getGlobalScale().x, seatPositionGlobalSize.y / getGlobalScale().y };
 
 		sf::Vector2f tableGlobalPosition = table.getGlobalTransform().transformPoint({ 0.0f, 0.0f });

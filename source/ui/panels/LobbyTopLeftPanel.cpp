@@ -150,7 +150,7 @@ void LobbyTopLeftPanel::initLockButton(const ClientLobbyState& clientLobbyState,
 	lockSprite.setPosition(m_lockButton->getGeometricCenter());
 	lockSprite.sprite().setColor(m_buttonsNormalColor);
 
-	SpriteElement& unlockSprite = static_cast<SpriteElement&>(m_lockButton->addChild(std::make_unique<SpriteElement>(gameContext.textureManager.getTexture("assets/textures/ui/unlocked2.png"))));
+	SpriteElement& unlockSprite = static_cast<SpriteElement&>(m_lockButton->addChild(std::make_unique<SpriteElement>(gameContext.textureManager.getTexture("assets/textures/ui/unlocked.png"))));
 	unlockSprite.setSize(m_lockButton->getSize());
 	unlockSprite.setOrigin(unlockSprite.getGeometricCenter());
 	unlockSprite.setPosition(m_lockButton->getGeometricCenter());

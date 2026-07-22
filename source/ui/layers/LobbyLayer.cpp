@@ -13,6 +13,7 @@
 #include "../panels/LobbyQueuePanel.h"
 #include "../panels/LobbySeatsPanel.h"
 #include "../panels/LobbyTopLeftPanel.h"
+#include "../panels/LobbyTablePanel.h"
 #include "../elements/RectangleElement.h"
 #include "../elements/RoundedRectangleElement.h"
 #include "../elements/SpriteElement.h"
@@ -46,7 +47,7 @@ void LobbyLayer::init()
 	m_topPanel = &addPanel(std::make_unique<Panel>());
 	m_queuePanel = &static_cast<LobbyQueuePanel&>(addPanel(std::make_unique<LobbyQueuePanel>()));
 	m_arrowRotatePanel = &addPanel(std::make_unique<Panel>());
-	m_tablePanel = &addPanel(std::make_unique<Panel>());
+	m_tablePanel = &static_cast<LobbyTablePanel&>(addPanel(std::make_unique<LobbyTablePanel>()));
 	m_chatPanel = &addPanel(std::make_unique<Panel>());
 	m_bottomButtonsPanel = &addPanel(std::make_unique<Panel>());
 	m_settingsPanel = &addPanel(std::make_unique<Panel>());
@@ -89,7 +90,8 @@ void LobbyLayer::init()
 	m_queuePanel->init();
 	m_lobbyPlayerViewGlobalSize = m_queuePanel->getPlayerViewGlobalSize();
 	initArrowRotatePanel();
-	initTablePanel();
+	m_tablePanel->init(*m_clientLobbyState, m_gameContext, m_clientContext, m_lobbyPlayerViewGlobalSize);
+	m_seatsPanel = m_tablePanel->getLobbySeatsPanel();
 
 	initChatPanel();
 	initBottomButtonsPanel();
@@ -133,22 +135,6 @@ void LobbyLayer::initArrowRotatePanel()
 	arrowRotate.setSize({ m_arrowRotatePanel->getSize().x * 0.8f, m_arrowRotatePanel->getSize().y * 0.8f });
 	arrowRotate.setOrigin(arrowRotate.getGeometricCenter());
 	arrowRotate.sprite().setColor({ 255, 255, 255, 10 });
-}
-
-void LobbyLayer::initTablePanel()
-{
-	RoundedRectangleElement& tableBackground = static_cast<RoundedRectangleElement&>(m_tablePanel->addChild(std::make_unique<RoundedRectangleElement>(m_tablePanel->getSize())));
-	tableBackground.shape().setFillColor({ 25, 25, 40, 255 });
-
-	const sf::Vector2f& tableBackgroundSize = tableBackground.getSize();
-
-	RoundedRectangleElement& table = static_cast<RoundedRectangleElement&>(m_tablePanel->addChild(std::make_unique<RoundedRectangleElement>(sf::Vector2f(tableBackgroundSize.x * 0.5f, tableBackgroundSize.y * 0.6f))));
-	table.setOrigin(table.getGeometricCenter());
-	table.setPosition(tableBackground.getGeometricCenter());
-	table.shape().setFillColor(sf::Color::Green);
-
-	m_seatsPanel = &static_cast<LobbySeatsPanel&>(m_tablePanel->addChild(std::make_unique<LobbySeatsPanel>(m_tablePanel->getSize())));
-	m_seatsPanel->init(table, m_lobbyPlayerViewGlobalSize, m_clientLobbyState->getPlayersPerGame());
 }
 
 void LobbyLayer::initChatPanel() //to do
