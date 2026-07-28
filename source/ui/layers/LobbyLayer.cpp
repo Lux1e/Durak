@@ -14,6 +14,7 @@
 #include "../panels/LobbySeatsPanel.h"
 #include "../panels/LobbyTopLeftPanel.h"
 #include "../panels/LobbyTablePanel.h"
+#include "../panels/LobbySettingsPanel.h"
 #include "../elements/RectangleElement.h"
 #include "../elements/RoundedRectangleElement.h"
 #include "../elements/SpriteElement.h"
@@ -51,9 +52,11 @@ void LobbyLayer::init()
 	m_tablePanel = &static_cast<LobbyTablePanel&>(addPanel(std::make_unique<LobbyTablePanel>()));
 	m_chatPanel = &addPanel(std::make_unique<Panel>());
 	m_bottomButtonsPanel = &addPanel(std::make_unique<Panel>());
-	m_settingsPanel = &addPanel(std::make_unique<Panel>());
+	m_settingsPanel = &static_cast<LobbySettingsPanel&>(addPanel(std::make_unique<LobbySettingsPanel>()));
 	m_popupPanel = &addPanel(std::make_unique<Panel>());
 	m_playersPanel = &addPanel(std::make_unique<Panel>());
+
+	m_testPanel = &addPanel(std::make_unique<Panel>());
 
 
 	m_backgroundPanel->setSize(m_size);
@@ -96,7 +99,7 @@ void LobbyLayer::init()
 
 	initChatPanel();
 	initBottomButtonsPanel();
-	initSettingsPanel();
+	m_settingsPanel->init(*m_clientLobbyState, m_gameContext, m_clientContext);
 	initPopupPanel();
 	initPlayersPanel();
 
@@ -141,7 +144,7 @@ void LobbyLayer::initArrowRotatePanel()
 void LobbyLayer::initChatPanel() //to do
 {
 	RoundedRectangleElement& chatBox = static_cast<RoundedRectangleElement&>(m_chatPanel->addChild(std::make_unique<RoundedRectangleElement>(m_chatPanel->getSize())));
-	chatBox.shape().setFillColor(sf::Color::Cyan);
+	chatBox.shape().setFillColor({ 20, 20, 30, 100 });
 }
 
 void LobbyLayer::initBottomButtonsPanel()
@@ -149,13 +152,13 @@ void LobbyLayer::initBottomButtonsPanel()
 	const sf::Vector2f& panelSize = m_bottomButtonsPanel->getSize();
 
 	RoundedRectangleElement& background = static_cast<RoundedRectangleElement&>(m_bottomButtonsPanel->addChild(std::make_unique<RoundedRectangleElement>(m_bottomButtonsPanel->getSize())));
-	background.shape().setFillColor(sf::Color::Yellow);
+	background.shape().setFillColor({ 20, 20, 30, 100 });
 
-	ButtonBuilder builder("READY", { panelSize.x * 0.90f, panelSize.y * 0.40f });
+	ButtonBuilder builder(m_gameContext.textureManager, "READY", { panelSize.x * 0.90f, panelSize.y * 0.40f });
 	ButtonStyle readyButtonStyle = ButtonStyleFactory::makeStandardStyle({ 40, 200, 40, 255 }, sf::Color::Black);
 	readyButtonStyle.text.outline.width = 0.0f;
 	readyButtonStyle.text.sizeFactor = { 0.8f, 0.65f };
-	readyButtonStyle.background.outline.width = -2.5f;
+	readyButtonStyle.background.outline.width = -2.0f;
 	builder.setStyle(readyButtonStyle);
 	builder.setFont(Fonts::ArialBI);
 	m_readyButton = &static_cast<Button&>(m_bottomButtonsPanel->addChild(builder.build()));
@@ -164,7 +167,7 @@ void LobbyLayer::initBottomButtonsPanel()
 	ButtonStyle startButtonStyle = ButtonStyleFactory::makeStandardStyle({ 40, 40, 200, 255 }, sf::Color::White);
 	startButtonStyle.text.outline.width = 0.0f;
 	startButtonStyle.text.sizeFactor = { 0.8f, 0.65f };
-	startButtonStyle.background.outline.width = -2.5f;
+	startButtonStyle.background.outline.width = -2.0f;
 	builder.setStyle(startButtonStyle);
 	m_startButton = &static_cast<Button&>(m_bottomButtonsPanel->addChild(builder.build()));
 
@@ -175,25 +178,6 @@ void LobbyLayer::initBottomButtonsPanel()
 
 	m_readyButton->setPosition({ panelSize.x * 0.5f, totalOffsetY / 3.0f });
 	m_startButton->setPosition({ panelSize.x * 0.5f, panelSize.y - totalOffsetY / 3.0f });
-}
-
-void LobbyLayer::initSettingsPanel()
-{
-	m_settingsPanel->setTransparentToInput(true);
-
-	RectangleElement& background = static_cast<RectangleElement&>(m_settingsPanel->addChild(std::make_unique<RectangleElement>(m_settingsPanel->getSize())));
-	background.shape().setFillColor({ 20, 20, 35, 255 });
-
-	sf::Vector2f localOffset = { background.getSize().x * 0.05f, background.getSize().y * 0.05f };
-
-	TextElement& settings = static_cast<TextElement&>(m_settingsPanel->addChild(std::make_unique<TextElement>(Fonts::ArialBD, "Settings")));
-	settings.setSize({ background.getSize().x * 0.6f, background.getSize().y * 0.06f });
-	settings.setOrigin({ settings.getSize().x * 0.5f, 0.0f });
-	settings.setPosition({ background.getSize().x * 0.5f, localOffset.y });
-
-	Panel& localSettingsPanel = static_cast<Panel&>(m_settingsPanel->addChild(std::make_unique<Panel>()));
-	localSettingsPanel.setSize({ m_settingsPanel->getSize().x - localOffset.x * 2, m_settingsPanel->getSize().y - settings.getBottomLeftPosition().y - localOffset.y * 2 });
-	localSettingsPanel.setOrigin({ localSettingsPanel.getSize().x * 0.5f, 0.0f });
 }
 
 void LobbyLayer::initPopupPanel()
@@ -212,14 +196,16 @@ void LobbyLayer::initPlayersPanel()
 
 void LobbyLayer::initTestPanel() // TEST PANEL
 {
+	m_testPanel->setSize(m_size);
+	m_testPanel->setTransparentToInput(true);
 }
 
 
 void LobbyLayer::subscribeAll()
 {
-	m_gameContext.ES.subscribe<SeatPositionsChangedEvent, LobbyLayer>(this, &LobbyLayer::onSeatPositionsChangedEvent);
-	m_gameContext.ES.subscribe<SeatPositionsSwappedEvent, LobbyLayer>(this, &LobbyLayer::onSeatPositionsSwappedEvent);
-	m_gameContext.ES.subscribe<PlayersPerGameChangedEvent, LobbyLayer>(this, &LobbyLayer::onPlayersPerGameChangedEvent);
+	m_gameContext.ES.subscribe<SeatPositionsChangedEvent>(this, &LobbyLayer::onSeatPositionsChangedEvent);
+	m_gameContext.ES.subscribe<SeatPositionsSwappedEvent>(this, &LobbyLayer::onSeatPositionsSwappedEvent);
+	m_gameContext.ES.subscribe<PlayersPerGameChangedEvent>(this, &LobbyLayer::onPlayersPerGameChangedEvent);
 }
 
 

@@ -5,12 +5,15 @@
 #include "styles/ButtonStyle.h"
 
 
+class TextureManager;
+
+
 
 class ButtonBuilder
 {
 public:
-	ButtonBuilder(std::string text = "", sf::Vector2f size = {160.0f, 90.0f}, sf::Vector2f position = {0.0f, 0.0f}, const sf::Font& font = Fonts::ArialBD, ButtonType type = ButtonType::Standard, ButtonStyle style = ButtonStyleFactory::makeStandardStyle()) :
-		m_text(std::move(text)), m_size(size), m_font(&font), m_type(type), m_style(style) {}
+	ButtonBuilder(TextureManager& textureManager, std::string text = "", sf::Vector2f size = { 160.0f, 90.0f }, sf::Vector2f position = { 0.0f, 0.0f }, const sf::Font& font = Fonts::ArialBD, ButtonType type = ButtonType::Standard, ButtonStyle style = ButtonStyleFactory::makeStandardStyle()) :
+		m_textureManager(textureManager), m_text(std::move(text)), m_size(size), m_font(&font), m_type(type), m_style(style) {}
 
 	std::unique_ptr<Button> build();
 
@@ -30,6 +33,7 @@ public:
 	sf::Vector2f getSize() const;
 
 private:
+	TextureManager& m_textureManager;
 	sf::Vector2f m_size;
 	std::string m_text;
 	const sf::Font* m_font;

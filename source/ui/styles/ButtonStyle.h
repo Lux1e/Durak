@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include "VisualComponent.h"
+#include "../../utils/UIUtils.h"
 
 
 
@@ -34,25 +35,40 @@ public:
 		float backgroundHoverFactor = 1.3f;
 		int textHoverFactor = 1.3f;
 
-		standard.background.colors.hovered.r = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.background.colors.normal.r) * backgroundHoverFactor, 0.0f, 255.0f));
-		standard.background.colors.hovered.g = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.background.colors.normal.g) * backgroundHoverFactor, 0.0f, 255.0f));
-		standard.background.colors.hovered.b = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.background.colors.normal.b) * backgroundHoverFactor, 0.0f, 255.0f));
-
-		standard.text.colors.hovered.r = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.text.colors.normal.r) * textHoverFactor, 0.0f, 255.0f));
-		standard.text.colors.hovered.g = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.text.colors.normal.g) * textHoverFactor, 0.0f, 255.0f));
-		standard.text.colors.hovered.b = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.text.colors.normal.b) * textHoverFactor, 0.0f, 255.0f));
+		standard.background.colors.hovered = UIUtils::scaleColor(standard.background.colors.normal, backgroundHoverFactor);
+		standard.text.colors.hovered = UIUtils::scaleColor(standard.text.colors.normal, textHoverFactor);
 
 		float backgroundPressFactor = 0.75f;
 		float textPressFactor = 0.85f;
 
-		standard.background.colors.pressed.r = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.background.colors.normal.r) * backgroundPressFactor, 0.0f, 255.0f));
-		standard.background.colors.pressed.g = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.background.colors.normal.g) * backgroundPressFactor, 0.0f, 255.0f));
-		standard.background.colors.pressed.b = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.background.colors.normal.b) * backgroundPressFactor, 0.0f, 255.0f));
-
-		standard.text.colors.pressed.r = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.text.colors.normal.r) * textPressFactor, 0.0f, 255.0f));
-		standard.text.colors.pressed.g = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.text.colors.normal.g) * textPressFactor, 0.0f, 255.0f));
-		standard.text.colors.pressed.b = static_cast<uint8_t>(std::clamp(static_cast<float>(standard.text.colors.normal.b) * textPressFactor, 0.0f, 255.0f));
+		standard.background.colors.pressed = UIUtils::scaleColor(standard.background.colors.normal, backgroundPressFactor);
+		standard.text.colors.pressed = UIUtils::scaleColor(standard.text.colors.normal, textPressFactor);
 
 		return standard;
+	}
+
+	static ButtonStyle makeDropdownStyle(sf::Color normalBackground = { 110, 110, 110, 255 }, sf::Color normalText = sf::Color::Black)
+	{
+		ButtonStyle dropdown;
+
+		dropdown.background.sizeFactor = { 1.0f, 1.0f };
+		dropdown.text.sizeFactor = { 1.0f, 1.5f };
+
+		dropdown.background.outline.color = { 125, 125, 125, 255 };
+		dropdown.text.outline.color = sf::Color::White;
+
+		dropdown.background.outline.width = -1.0f;
+		dropdown.text.outline.width = 0.0f;
+
+		dropdown.background.colors.normal = normalBackground;
+		dropdown.text.colors.normal = normalText;
+
+		dropdown.background.colors.hovered = { 160, 160, 170, 255 };
+		dropdown.text.colors.hovered = normalText;
+
+		dropdown.background.colors.pressed = dropdown.background.colors.hovered;
+		dropdown.text.colors.pressed = dropdown.text.colors.hovered;
+
+		return dropdown;
 	}
 };

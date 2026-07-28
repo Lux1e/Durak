@@ -13,6 +13,7 @@
 #include "../styles/VisualComponent.h"
 #include "../../core/animation/RotateAnimation.h"
 #include "../../game/events/requests/ExitRequestEvent.h"
+#include "LobbySettingsPanel.h"
 
 
 
@@ -131,7 +132,6 @@ void LobbyTopLeftPanel::init(const ClientLobbyState& clientLobbyState, const Gam
 	initLockButton(clientLobbyState, gameContext, clientContext);
 }
 
-
 void LobbyTopLeftPanel::initLockButton(const ClientLobbyState& clientLobbyState, const GameContext& gameContext, const ClientContext& clientContext)
 {
 	VisualComponent lockButtonComponents;
@@ -238,8 +238,6 @@ void LobbyTopLeftPanel::initLockButton(const ClientLobbyState& clientLobbyState,
 
 	if (clientContext.localRole == ClientRole::Regular)
 	{
-		assert(clientContext.localId != clientLobbyState.getHostId());
-
 		m_lockButton->blockHovered();
 		m_lockButton->blockPressed();
 		m_lockButton->blockClick();

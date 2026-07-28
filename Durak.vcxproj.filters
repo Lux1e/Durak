@@ -138,6 +138,9 @@
     <ClCompile Include="source\ui\panels\LobbyTablePanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\ui\panels\LobbySettingsPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\game\CardData.h">
@@ -543,6 +546,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\ui\panels\LobbyTablePanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\panels\LobbySettingsPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

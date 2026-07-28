@@ -29,11 +29,20 @@ public:
 		return nullptr;
 	}
 
+	UIElement* getSpriteElement()
+	{
+		if (m_getSpriteElement)
+			return m_getSpriteElement(*this);
+
+		return nullptr;
+	}
+
 private:
 	friend class ButtonBuilder;
 
 	std::function<UIElement* (Button&)> m_getBackgroundElement;
 	std::function<UIElement* (Button&)> m_getTextElement;
+	std::function<UIElement* (Button&)> m_getSpriteElement;
 
 
 	void drawSelf(sf::RenderTarget& target, sf::RenderStates states) const override {}

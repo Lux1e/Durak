@@ -7,5 +7,6 @@ enum class ButtonType
 	Standard,
 	Rectangle,
 	Pilled,
-	Sprite
+	Sprite,
+	Dropdown
 };

@@ -8,5 +8,5 @@ struct  VisualComponent
 {
 	InteractionColorsState colors;
 	OutlineSettingsState outline;
-	sf::Vector2f sizeFactor;
+	sf::Vector2f sizeFactor = { 1.0f, 1.0f };
 };

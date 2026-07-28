@@ -8,8 +8,7 @@ class SpriteElement : public UIElement
 {
 public:
 	SpriteElement(const sf::Texture& texture, sf::Vector2f position = { 0.0f, 0.0f }) : m_sprite(texture),
-		UIElement(sf::Vector2f({ static_cast<float>(texture.getSize().x), static_cast<float>(texture.getSize().y) }), position) {
-	}
+		UIElement(sf::Vector2f({ static_cast<float>(texture.getSize().x), static_cast<float>(texture.getSize().y) }), position) {}
 
 	sf::Sprite& sprite() { return m_sprite; }
 

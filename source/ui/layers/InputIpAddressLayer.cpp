@@ -48,7 +48,7 @@ void InputIpAddressLayer::initIpPanel(Panel& ipPanel)
 	sf::Color passiveButtonColorBG = { 20, 20, 20, 255 };
 	sf::Color passiveButtonColorString = { 100, 100, 100, 255 };
 
-	ButtonBuilder builder("CONNECT");
+	ButtonBuilder builder(m_gameContext.textureManager, "CONNECT");
 	builder.setButtonType(ButtonType::Rectangle);
 	auto connectButtonStyle = ButtonStyleFactory::makeStandardStyle(sf::Color{ 20, 120, 20, 255 });
 	connectButtonStyle.background.outline.width = 0.0f;

@@ -24,7 +24,7 @@ public:
 	virtual void init(const sf::Vector2f& windowSize) = 0;
 	virtual void mouseInputUpdate()
 	{
-		if (m_inputCaptured)
+		if (m_inputCaptured && m_activeLayer)
 			m_activeLayer->mouseInputUpdate();
 		else
 		{
@@ -69,13 +69,13 @@ public:
 
 	void handleEvents(const sf::Event& event)
 	{
-		if (auto e = event.getIf <sf::Event::MouseButtonPressed>())
+		if (auto e = event.getIf<sf::Event::MouseButtonPressed>())
 		{
 			if (e->button == sf::Mouse::Button::Left)
 				m_inputCaptured = true;
 		}
 
-		if (auto e = event.getIf <sf::Event::MouseButtonReleased>())
+		if (auto e = event.getIf<sf::Event::MouseButtonReleased>())
 		{
 			if (e->button == sf::Mouse::Button::Left)
 				m_inputCaptured = false;

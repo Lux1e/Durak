@@ -14,6 +14,7 @@ class LobbyQueuePanel;
 class LobbySeatsPanel;
 class LobbyTopLeftPanel;
 class LobbyTablePanel;
+class LobbySettingsPanel;
 struct SeatPositionsChangedEvent;
 struct SeatPositionsSwappedEvent;
 struct PlayersPerGameChangedEvent;
@@ -43,7 +44,6 @@ private:
 	void initArrowRotatePanel();
 	void initChatPanel();
 	void initBottomButtonsPanel();
-	void initSettingsPanel();
 	void initPopupPanel();
 	void initPlayersPanel();
 
@@ -72,7 +72,7 @@ private:
 	LobbySeatsPanel* m_seatsPanel = nullptr;
 	Panel* m_chatPanel = nullptr;
 	Panel* m_bottomButtonsPanel = nullptr;
-	Panel* m_settingsPanel = nullptr;
+	LobbySettingsPanel* m_settingsPanel = nullptr;
 	Panel* m_popupPanel = nullptr;
 	Panel* m_playersPanel = nullptr;
 

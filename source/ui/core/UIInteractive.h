@@ -59,6 +59,13 @@ public:
 		++control.locks.click;
 	}
 
+	void blockFullActions()
+	{
+		blockHovered();
+		blockPressed();
+		blockClick();
+	}
+
 
 	void unblockHovered()
 	{
@@ -77,6 +84,14 @@ public:
 		if (control.locks.click > 0)
 			--control.locks.click;
 	}
+
+	void unblockFullActions()
+	{
+		unblockHovered();
+		unblockPressed();
+		unblockClick();
+	}
+
 
 	bool canBeHovered() const { return control.locks.hover == 0; }
 	bool canBePressed() const { return control.locks.press == 0; }

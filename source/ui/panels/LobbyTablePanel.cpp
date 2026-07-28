@@ -92,13 +92,8 @@ void LobbyTablePanel::init(const ClientLobbyState& clientLobbyState, const GameC
 
 	if (clientContext.localRole == ClientRole::Regular)
 	{
-		leftArrow.blockHovered();
-		leftArrow.blockPressed();
-		leftArrow.blockClick();
-
-		rightArrow.blockHovered();
-		rightArrow.blockPressed();
-		rightArrow.blockClick();
+		leftArrow.setVisible(false);
+		rightArrow.setVisible(false);
 	}
 
 

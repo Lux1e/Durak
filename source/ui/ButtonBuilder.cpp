@@ -1,8 +1,10 @@
-#include <memory>
 #include "ButtonBuilder.h"
+#include <memory>
+#include "../resources/TextureManager.h"
 #include "elements/RoundedRectangleElement.h"
 #include "elements/RectangleElement.h"
 #include "elements/TextElement.h"
+#include "elements/SpriteElement.h"
 
 
 
@@ -10,15 +12,16 @@ std::unique_ptr<Button> ButtonBuilder::build()
 {
 	std::unique_ptr<Button> buttonPtr = std::make_unique<Button>();
 
+	auto& button = *buttonPtr.get();
+	button.setSize(m_size);
+	sf::Vector2f buttonSize = button.getSize();
+
 	switch (m_type)
 	{
 		case ButtonType::Standard:
 		case ButtonType::Rectangle:
 		case ButtonType::Pilled:
 		{
-			auto& button = *buttonPtr.get();
-			button.setSize(m_size);
-
 			std::variant<RoundedRectangleElement*, RectangleElement*> backgroundVariant;
 			UIElement* backgroundPtr = nullptr;
 
@@ -45,7 +48,7 @@ std::unique_ptr<Button> ButtonBuilder::build()
 
 			std::visit([&](const auto& bg)
 				{
-					bg->setSize({ m_size.x * m_style.background.sizeFactor.x, m_size.y * m_style.background.sizeFactor.y });
+					bg->setSize({ buttonSize.x * m_style.background.sizeFactor.x, buttonSize.y * m_style.background.sizeFactor.y });
 					auto& bgShape = bg->shape();
 					bgShape.setFillColor(m_style.background.colors.normal);
 					bgShape.setOutlineColor(m_style.background.outline.color);
@@ -57,8 +60,8 @@ std::unique_ptr<Button> ButtonBuilder::build()
 			TextElement& text = static_cast<TextElement&>(button.addChild(std::make_unique<TextElement>(*m_font, m_text)));
 
 			text.setOrigin(text.getGeometricCenter());
-			text.setPosition({ m_size.x / 2.0f, m_size.y / 2.0f });
-			text.setSize({ m_size.x * m_style.text.sizeFactor.x, m_size.y * m_style.text.sizeFactor.y });
+			text.setPosition({ buttonSize.x / 2.0f, buttonSize.y / 2.0f });
+			text.setSize({ buttonSize.x * m_style.text.sizeFactor.x, buttonSize.y * m_style.text.sizeFactor.y });
 
 			auto& textShape = text.text();
 			textShape.setFillColor(m_style.text.colors.normal);
@@ -102,6 +105,75 @@ std::unique_ptr<Button> ButtonBuilder::build()
 
 			button.m_getBackgroundElement = [backgroundPtr](Button&) -> UIElement* { return backgroundPtr; };
 			button.m_getTextElement = [&text](Button&) -> UIElement* { return &text; };
+
+			break;
+		}
+
+		case ButtonType::Dropdown:
+		{
+			RectangleElement& background = static_cast<RectangleElement&>(button.addChild(std::make_unique<RectangleElement>()));
+			background.setSize({ buttonSize.x * m_style.background.sizeFactor.x, buttonSize.y * m_style.background.sizeFactor.y });
+
+			sf::Vector2f maxSize = { m_size.x * 0.85f, m_size.y * 0.5f };
+			sf::Vector2f minPosition = { (m_size.x - maxSize.x) * 0.5f, (m_size.y - maxSize.y) * 0.5f };
+			sf::Vector2f maxPosition = { m_size.x - minPosition.x, m_size.y - minPosition.y };
+
+
+			background.shape().setFillColor(m_style.background.colors.normal);
+			background.shape().setOutlineColor(m_style.background.outline.color);
+			background.shape().setOutlineThickness(m_style.background.outline.width);
+
+			TextElement& string = static_cast<TextElement&>(button.addChild(std::make_unique<TextElement>(*m_font, m_text)));
+			string.setSize(maxSize);
+			string.setTextSizeMode(TextElement::TextSizeMode::Fixed);
+			string.setTextAlign(TextElement::TextAlign::Left);
+			string.setCharacterSize(string.getSize().y);
+			string.setOutline(m_style.text.outline.width, m_style.text.outline.color);
+			string.text().setFillColor(m_style.text.colors.normal);
+			string.setPosition(minPosition);
+
+			SpriteElement& sprite = static_cast<SpriteElement&>(button.addChild(std::make_unique<SpriteElement>(m_textureManager.getTexture("assets/textures/ui/arrow_basic_w.png"))));
+			sprite.fitToSize(maxSize * 0.70f);
+			sprite.setOrigin(sprite.getGeometricCenter());
+			sprite.setRotation(sf::degrees(-90.0f));
+			sprite.setPosition({ maxPosition.x - sprite.getSize().x * 0.5f, m_size.y * 0.5f });
+
+			button.m_getBackgroundElement = [backgroundPtr = &background](Button&)->UIElement* { return backgroundPtr; };
+			button.m_getTextElement = [stringPtr = &string](Button&)->UIElement* { return stringPtr; };
+			button.m_getSpriteElement = [spritePtr = &sprite](Button&)->UIElement* { return spritePtr; };
+
+			button.setOnHover([style = m_style, &string, &background](UIElement& element)
+				{
+					background.shape().setFillColor(style.background.colors.hovered);
+					string.text().setFillColor(style.text.colors.hovered);
+				});
+
+			button.setOnHoverEnd([style = m_style, &string, &background](UIElement& element)
+				{
+					background.shape().setFillColor(style.background.colors.normal);
+					string.text().setFillColor(style.text.colors.normal);
+				});
+
+			button.setOnPressed([style = m_style, &string, &background](UIInteractive& element)
+				{
+					background.shape().setFillColor(style.background.colors.pressed);
+					string.text().setFillColor(style.text.colors.pressed);
+				});
+
+			button.setOnReleased([style = m_style, &string, &background](UIInteractive& element, bool hitTest)
+				{
+					if (hitTest)
+					{
+						background.shape().setFillColor(style.background.colors.hovered);
+						string.text().setFillColor(style.text.colors.hovered);
+					}
+
+					else
+					{
+						background.shape().setFillColor(style.background.colors.normal);
+						string.text().setFillColor(style.text.colors.normal);
+					}
+				});
 
 			break;
 		}

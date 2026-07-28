@@ -34,7 +34,7 @@ void MainMenuLayer::initMainMenuButtonsPanel(Panel& mainMenuButtonsPanel)
 	mainMenuButtonsPanel.setPosition({ m_size.x / 2.0f, m_size.y / 2.0f });
 
 
-	ButtonBuilder buttonBuilder("PLAY", { mainMenuButtonsPanel.getSize().x, mainMenuButtonsPanel.getSize().y / 4.0f }, { 0.0f, 0.0f }, Fonts::ArialBD);
+	ButtonBuilder buttonBuilder(m_gameContext.textureManager, "PLAY", { mainMenuButtonsPanel.getSize().x, mainMenuButtonsPanel.getSize().y / 4.0f }, { 0.0f, 0.0f }, Fonts::ArialBD);
 	Button& playButton = static_cast<Button&>(mainMenuButtonsPanel.addChild(buttonBuilder.build()));
 
 	buttonBuilder.setText("SETTINGS");
@@ -76,7 +76,7 @@ void MainMenuLayer::initChooseMenuButtonsPanel(Panel& chooseMenuButtonsPanel)
 
 
 	const sf::Vector2f& mainButtonsPanelSize = mainButtonsPanel.getSize();
-	ButtonBuilder buttonBuilder("create game", { mainButtonsPanelSize.x, mainButtonsPanelSize.y / 2.5f });
+	ButtonBuilder buttonBuilder(m_gameContext.textureManager, "create game", { mainButtonsPanelSize.x, mainButtonsPanelSize.y / 2.5f });
 	Button& createGameButton = static_cast<Button&>(mainButtonsPanel.addChild(buttonBuilder.build()));
 
 	buttonBuilder.setText("join game");

@@ -188,7 +188,7 @@ void UIElement::setSize(sf::Vector2f size)
 		m_size.y > 0 ? getOrigin().y / m_size.y : 0.0f
 	};
 
-	m_size = size; //stack overflow???
+	m_size = size;
 	setOrigin({ size.x * originRatio.x, size.y * originRatio.y });
 
 	for (auto& child : m_children)

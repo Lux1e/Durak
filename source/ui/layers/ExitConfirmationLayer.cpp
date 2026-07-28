@@ -54,8 +54,7 @@ void ExitConfirmationLayer::initExitConfirmationPanel(Panel& exitConfirmationPan
 	textElement.setOrigin(textElement.getGeometricCenter());
 	textElement.setPosition({ exitPanelSize.x / 2.0f, exitPanelSize.y * 0.35f });
 
-
-	ButtonBuilder buttonBuilder("YES");
+	ButtonBuilder buttonBuilder(m_gameContext.textureManager, "YES");
 	buttonBuilder.setButtonType(ButtonType::Pilled);
 	ButtonStyle style = ButtonStyleFactory::makeStandardStyle(sf::Color(75, 75, 85, 255));
 	style.text.sizeFactor = { 0.8f, 0.5f };

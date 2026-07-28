@@ -23,7 +23,10 @@ public:
 
 
 	sf::Vector2f getPlayerViewGlobalSize() const { return { getGlobalSize().x, getGlobalSize().y / Constants::Lobby::MaxPlayersInLobby }; }
-	sf::Vector2f getPlayerGlobalSeatPositionByQueueIndex(uint32_t index) { return getGlobalTransform().transformPoint({ m_firstPlayerPosition.x, m_firstPlayerPosition.y + m_firstPlayerLocalSize.y * static_cast<float>(index) }); }
+	sf::Vector2f getPlayerGlobalSeatPositionByQueueIndex(uint32_t index)
+	{
+		return getGlobalTransform().transformPoint({ m_firstPlayerPosition.x, m_firstPlayerPosition.y + m_firstPlayerLocalSize.y * static_cast<float>(index) });
+	}
 
 private:
 	sf::Vector2f m_firstPlayerLocalSize;
