@@ -36,7 +36,13 @@ public:
 	void setTextSizeMode(TextSizeMode mode) { m_textSizeMode = mode; }
 	TextSizeMode getTextSizeMode() const { return m_textSizeMode; }
 
-	void setString(std::string text) { m_text.setString(std::move(text)); fitTextToRect(); }
+	void setString(std::string text)
+	{
+		m_text.setString(std::move(text));
+		fitTextToRect();
+		centerText();
+	}
+
 	std::string getString() const { return m_text.getString(); }
 
 	void setCharacterSize(unsigned int size)

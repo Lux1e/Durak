@@ -187,8 +187,8 @@
     <ClCompile Include="source\states\SeatPositionsState.cpp" />
     <ClCompile Include="source\core\animation\Easing.cpp" />
     <ClCompile Include="source\ui\ButtonBuilder.cpp" />
-    <ClCompile Include="source\ui\controllers\DragController.cpp" />
     <ClCompile Include="source\ui\core\UIElement.cpp" />
+    <ClCompile Include="source\ui\core\UIInteractive.cpp" />
     <ClCompile Include="source\ui\layers\ExitConfirmationLayer.cpp" />
     <ClCompile Include="source\ui\layers\InputIpAddressLayer.cpp" />
     <ClCompile Include="source\ui\layers\LobbyLayer.cpp" />
@@ -210,6 +210,7 @@
     <ClInclude Include="source\core\ClientContext.h" />
     <ClInclude Include="source\core\Committable.h" />
     <ClInclude Include="source\core\Concepts.h" />
+    <ClInclude Include="source\core\input\InputCapture.h" />
     <ClInclude Include="source\core\input\InputController.h" />
     <ClInclude Include="source\core\input\InputState.h" />
     <ClInclude Include="source\core\LaunchArgs.h" />
@@ -299,7 +300,6 @@
     <ClInclude Include="source\core\animation\TimedAnimation.h" />
     <ClInclude Include="source\core\animation\RotateAnimation.h" />
     <ClInclude Include="source\ui\ButtonBuilder.h" />
-    <ClInclude Include="source\ui\controllers\DragController.h" />
     <ClInclude Include="source\ui\elements\SpriteElement.h" />
     <ClInclude Include="source\ui\layers\LobbyLayer.h" />
     <ClInclude Include="source\ui\LobbyPlayerView.h" />

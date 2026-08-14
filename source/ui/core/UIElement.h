@@ -7,6 +7,7 @@
 
 
 class UIInteractive;
+class InputCapture;
 
 
 
@@ -18,10 +19,10 @@ public:
 	{
 		setSize(size);
 		setPosition(position);
+
 		m_isVisible = true;
 		m_hitTestChildren = true;
 		m_isTransparentToInput = false;
-		m_dragLocks = 1;
 	};
 
 	UIElement(const UIElement&) = delete;
@@ -81,10 +82,7 @@ public:
 	void setTransparentToInput(bool value);
 	bool isTransparentToInput() const;
 
-	void blockDraggable();
-	void unblockDraggable();
-
-	bool isDraggable() const;
+	void setInputCapture(InputCapture& inputCapture);
 
 	template<AnimationType T, typename... Args>
 	T& addAnimation(Args&&... args)
@@ -99,6 +97,8 @@ public:
 	bool isAnimating() const;
 
 protected:
+	InputCapture* m_inputCapture = nullptr;
+
 	sf::Vector2f m_size;
 
 	UIElement* m_parent = nullptr;
@@ -133,6 +133,4 @@ private:
 	bool m_isVisible;
 	bool m_hitTestChildren;
 	bool m_isTransparentToInput;
-
-	uint32_t m_dragLocks;
 };

@@ -113,33 +113,14 @@ void MainMenuLayer::initChooseMenuButtonsPanel(Panel& chooseMenuButtonsPanel)
 
 bool MainMenuLayer::handleEvents(const sf::Event& event)
 {
-	if (const auto& e = event.getIf<sf::Event::MouseButtonPressed>())
-	{
-		if (e->button == sf::Mouse::Button::Left)
-			return onMousePressedEvent();
-	}
-
-	if (const auto& e = event.getIf<sf::Event::MouseButtonReleased>())
-	{
-		if (e->button == sf::Mouse::Button::Left)
-			return onMouseReleasedEvent();
-	}
-
 	if (const auto& k = event.getIf<sf::Event::KeyReleased>())
 	{
 		if (k->scancode == sf::Keyboard::Scan::Escape)
 		{
 			if (m_mainMenuButtonsPanel->isVisible())
 			{
-				if (m_underMouseElement)
-				{
-					if (m_underMouseElement->isInteractive())
-					{
-						auto& interactive = *m_underMouseElement->asInteractive();
-						interactive.setHovered(false);
-						interactive.setPressed(false, false);
-					}
-				}
+				if (m_inputCapture.active())
+					m_inputCapture.release();
 
 				m_gameContext.ES.publish(ExitRequestEvent{});
 			}

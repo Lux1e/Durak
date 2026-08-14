@@ -9,6 +9,7 @@ struct ControlState
 	{
 		bool hovered;
 		bool pressed;
+		bool dragged;
 	} interaction;
 
 	struct Locks
@@ -16,5 +17,6 @@ struct ControlState
 		uint32_t hover = 0;
 		uint32_t press = 0;
 		uint32_t click = 0;
+		uint32_t drag = 1;
 	} locks;
 };

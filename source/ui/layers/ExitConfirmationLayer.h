@@ -7,7 +7,7 @@
 class ExitConfirmationLayer : public ILayer
 {
 public:
-	ExitConfirmationLayer(GameContext& gameContext, sf::Vector2f size) : ILayer(gameContext, size)
+	ExitConfirmationLayer(GameContext& gameContext, InputCapture& inputCapture, sf::Vector2f size) : ILayer(gameContext, inputCapture, size)
 	{
 		init();
 	}

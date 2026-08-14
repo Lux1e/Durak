@@ -38,11 +38,11 @@ void Game::init(std::optional<int> profileIndex)
 	m_clientModel = std::make_unique<ClientModel>(ES, loadOrCreateToken(profileIndex), m_nickname, TEST_clientLobbyState);
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+	uiController.setGameContext(m_gameContext);
 	uiController.setWindowSize(_window.getView().getSize());
 
-	//uiController.setScene(std::make_unique<TestMenuScene>(m_gameContext));
-	uiController.setScene(std::make_unique<LobbyScene>(m_gameContext, TEST_clientContext, TEST_clientLobbyState));
+	//uiController.setScene(std::make_unique<TestMenuScene>(m_gameContext, uiController.getInputCapture()));
+	uiController.setScene(std::make_unique<LobbyScene>(m_gameContext, uiController.getInputCapture(), TEST_clientContext, TEST_clientLobbyState));
 
 	m_server = nullptr;
 	//m_clientModel = nullptr;

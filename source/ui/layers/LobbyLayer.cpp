@@ -264,6 +264,23 @@ void LobbyLayer::addPlayer(uint32_t id, std::string nickname, ClientRole role, i
 
 	else
 		player.setPosition(MathUtils::round(inverse.transformPoint(m_seatsPanel->getGlobalSeatPositionBySeatIndex(seatIndex))));
+
+	player.setOnMouseDown([this](UIInteractive& element)
+		{
+			auto& players = m_playersPanel->getAllChildren();
+			auto it = std::find_if(players.begin(), players.end(), [&](const auto& child) { return &element == child.get(); });
+			if (it != players.end())
+				std::swap(*it, players.back());
+
+			element.setDragged(true);
+			element.captureInput();
+		});
+
+	player.setOnCaptureEnd([this](UIInteractive& element)
+		{
+			LobbyPlayerView& player = static_cast<LobbyPlayerView&>(element);
+			onLobbyPlayerViewDrop(player);
+		});
 }
 
 void LobbyLayer::removePlayer(uint32_t id)
@@ -310,67 +327,18 @@ void LobbyLayer::removePlayer(LobbyPlayerView& player)
 
 bool LobbyLayer::handleEvents(const sf::Event& event)
 {
-	if (const auto& e = event.getIf<sf::Event::MouseButtonPressed>())
-	{
-		if (e->button == sf::Mouse::Button::Left)
-		{
-			if (m_underMouseElement)
-			{
-				if (m_underMouseElement->isDraggable())
-				{
-					m_dragController.startDragging(m_underMouseElement);
-
-					auto& children = m_underMouseElement->getParent()->getAllChildren();
-					for (size_t i = 0; children.size(); ++i)
-					{
-						if (children[i].get() == m_underMouseElement)
-						{
-							std::swap(children[i], children.back());
-							break;
-						}
-					}
-				}
-
-				else
-					return onMousePressedEvent();
-			}
-		}
-	}
-
-	if (const auto& e = event.getIf<sf::Event::MouseButtonReleased>())
-	{
-		if (e->button == sf::Mouse::Button::Left)
-		{
-			if (m_underMouseElement)
-			{
-				if (m_underMouseElement->isDraggable() && m_dragController.isDragging())
-				{
-					if (auto* player = dynamic_cast<LobbyPlayerView*>(m_underMouseElement))
-						return onLobbyPlayerViewDrop(*player);
-				}
-
-				else
-					return onMouseReleasedEvent();
-			}
-		}
-	}
-
 	return false;
 }
 
 void LobbyLayer::update(float dt)
 {
-	m_dragController.update(m_gameContext.input);
-
 	for (const auto& panel : m_panels)
 		panel.get()->update(dt);
 }
 
 
-bool LobbyLayer::onLobbyPlayerViewDrop(LobbyPlayerView& player)
+void LobbyLayer::onLobbyPlayerViewDrop(LobbyPlayerView& player)
 {
-	m_dragController.endDragging();
-
 	uint32_t playerId = player.getId();
 	bool inQueue = false;
 	int currentPlayerSeatIndex = m_clientLobbyState->getPlayerSeatIndex(playerId).value();
@@ -419,8 +387,6 @@ bool LobbyLayer::onLobbyPlayerViewDrop(LobbyPlayerView& player)
 
 	applyMoveAnimationToPlayer<MoveAnimation>(player, [playerPtr = &player](sf::Vector2f pos) { playerPtr->setPosition(pos); },
 		EaseType::InOutCubic, player.getPosition(), endPosition, Constants::Animations::StandardMoveAnimationTime);
-
-	return true;
 }
 
 
@@ -457,7 +423,7 @@ void LobbyLayer::updatePlayersSeatsInQueue()
 		{
 			LobbyPlayerView& player = *it->second;
 
-			if (player.getGlobalPosition() == playerGlobalSeatPosition || m_dragController.getDraggingElement() == &player)
+			if (player.getGlobalPosition() == playerGlobalSeatPosition || player.isDragged())
 				continue;
 
 			applyMoveAnimationToPlayer<MoveAnimation>(player, [playerPtr = &player](sf::Vector2f pos) { playerPtr->setPosition(pos); },

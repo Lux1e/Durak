@@ -55,9 +55,7 @@ void InputIpAddressLayer::initIpPanel(Panel& ipPanel)
 	builder.setStyle(connectButtonStyle);
 	m_connectButton = &static_cast<Button&>(ipPanel.addChild(builder.build()));
 
-	m_connectButton->blockHovered();
-	m_connectButton->blockPressed();
-	m_connectButton->blockClick();
+	m_connectButton->blockInteraction();
 
 	switchConnectButtonColors = [this, connectButtonStyle, passiveButtonColorBG, passiveButtonColorString](bool state)
 		{
@@ -113,9 +111,7 @@ void InputIpAddressLayer::updateIPBox()
 	{
 		if (!m_connectButton->canBeClicked())
 		{
-			m_connectButton->unblockHovered();
-			m_connectButton->unblockPressed();
-			m_connectButton->unblockClick();
+			m_connectButton->blockInteraction();
 
 			switchConnectButtonColors(valid);
 		}
@@ -126,11 +122,9 @@ void InputIpAddressLayer::updateIPBox()
 		if (m_connectButton->canBeClicked())
 		{
 			m_connectButton->setHovered(false);
-			m_connectButton->setPressed(false, false);
+			//m_connectButton->setPressed(false, false);
 
-			m_connectButton->blockHovered();
-			m_connectButton->blockPressed();
-			m_connectButton->blockClick();
+			m_connectButton->blockInteraction();
 
 			switchConnectButtonColors(valid);
 		}
@@ -140,18 +134,6 @@ void InputIpAddressLayer::updateIPBox()
 
 bool InputIpAddressLayer::handleEvents(const sf::Event& event)
 {
-	if (const auto& e = event.getIf<sf::Event::MouseButtonPressed>())
-	{
-		if (e->button == sf::Mouse::Button::Left)
-			return onMousePressedEvent();
-	}
-
-	if (const auto& e = event.getIf<sf::Event::MouseButtonReleased>())
-	{
-		if (e->button == sf::Mouse::Button::Left)
-			return onMouseReleasedEvent();
-	}
-
 	if (const auto& e = event.getIf<sf::Event::TextEntered>())
 	{
 		if (e->unicode < 128)

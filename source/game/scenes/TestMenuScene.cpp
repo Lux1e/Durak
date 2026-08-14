@@ -11,9 +11,9 @@ void TestMenuScene::init(const sf::Vector2f& windowSize)
 {
 	m_size = windowSize;
 
-	m_mainMenuLayer = &addLayer(std::make_unique<MainMenuLayer>(m_gameContext, m_size));
-	m_InputIpAddressLayer = &addLayer(std::make_unique<InputIpAddressLayer>(m_gameContext, m_size));
-	m_exitLayer = &addLayer(std::make_unique<ExitConfirmationLayer>(m_gameContext, m_size));
+	m_mainMenuLayer = &addLayer(std::make_unique<MainMenuLayer>(m_gameContext, m_inputCapture, m_size));
+	m_InputIpAddressLayer = &addLayer(std::make_unique<InputIpAddressLayer>(m_gameContext, m_inputCapture, m_size));
+	m_exitLayer = &addLayer(std::make_unique<ExitConfirmationLayer>(m_gameContext, m_inputCapture, m_size));
 }
 
 
@@ -26,7 +26,7 @@ void TestMenuScene::subscribeAll()
 
 void TestMenuScene::onExitRequestEvent(const ExitRequestEvent& event, const EventInitiator& initiator)
 {
-	setInputCaptured(false);
+	m_inputCapture.release();
 
 	if (m_exitLayer)
 		m_exitLayer->setVisible(true);
@@ -34,7 +34,7 @@ void TestMenuScene::onExitRequestEvent(const ExitRequestEvent& event, const Even
 
 void TestMenuScene::onInputIpAddressRequestEvent(const InputIpAddressRequestEvent& event, const EventInitiator& initiator)
 {
-	setInputCaptured(false);
+	m_inputCapture.release();
 
 	if (m_InputIpAddressLayer)
 		m_InputIpAddressLayer->setVisible(true);

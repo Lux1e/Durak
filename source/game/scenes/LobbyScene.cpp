@@ -9,7 +9,7 @@ void LobbyScene::init(const sf::Vector2f& windowSize)
 {
 	m_size = windowSize;
 
-	m_lobbyLayer = &addLayer(std::make_unique<LobbyLayer>(m_gameContext, m_size, *m_lobbyState, m_localContext));
+	m_lobbyLayer = &addLayer(std::make_unique<LobbyLayer>(m_gameContext, m_inputCapture, m_size, *m_lobbyState, m_localContext));
 }
 
 
@@ -31,7 +31,7 @@ void LobbyScene::resyncScene()
 
 void LobbyScene::onExitRequestEvent(const ExitRequestEvent& event, const EventInitiator& initiator)
 {
-	setInputCaptured(false);
+	m_inputCapture.release();
 
 	if (m_exitLobbyLayer)
 		m_exitLobbyLayer->setVisible(true);

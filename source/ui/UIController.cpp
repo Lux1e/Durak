@@ -1,6 +1,5 @@
 #include "UIController.h"
 #include "../game/scenes/TestMenuScene.h"
-#include "../game/scenes/TestLobbyScene.h"
 
 
 
@@ -18,7 +17,8 @@ void UIController::cleanSceneToDelete()
 
 void UIController::mouseInputUpdate()
 {
-	currentScene->mouseInputUpdate();
+	if (currentScene)
+		currentScene->mouseInputUpdate();
 }
 
 void UIController::handleEvents(const sf::Event& event)
@@ -63,6 +63,8 @@ sf::Vector2f UIController::getWindowSize() const
 void UIController::setScene(std::unique_ptr<IScene> scene)
 {
 	assert(!m_sceneToDelete);
+
+	m_inputCapture.release();
 	m_sceneToDelete = std::move(currentScene);
 	currentScene = std::move(scene);
 	currentScene->init(m_windowSize);
@@ -71,4 +73,21 @@ void UIController::setScene(std::unique_ptr<IScene> scene)
 const IScene& UIController::getCurrentScene() const
 {
 	return *currentScene.get();
+}
+
+
+void UIController::setGameContext(GameContext& gameContext)
+{
+	m_gameContext = &gameContext;
+}
+
+GameContext* UIController::getGameContext() const
+{
+	return m_gameContext;
+}
+
+
+InputCapture& UIController::getInputCapture()
+{
+	return m_inputCapture;
 }

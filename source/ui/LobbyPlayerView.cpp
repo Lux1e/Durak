@@ -8,11 +8,12 @@ void LobbyPlayerView::init(sf::Vector2f size, const sf::Font& font, const std::s
 {
 	blockClick();
 	setChildrenHitTest(false);
-	unblockDraggable();
+	unblockDrag();
 
 	initBackground();
 	initNickname(font, nickname);
-	initOnHover();
+	initColors();
+	initInputActions();
 }
 
 void LobbyPlayerView::initBackground()
@@ -32,20 +33,49 @@ void LobbyPlayerView::initNickname(const sf::Font& font, const std::string& nick
 	m_nickname->text().setFillColor(sf::Color::Yellow);
 }
 
-void LobbyPlayerView::initOnHover()
+void LobbyPlayerView::initColors()
 {
 	VisualComponent backgroundComponent;
 	backgroundComponent.colors.normal = m_background->shape().getFillColor();
 	backgroundComponent.colors.hovered = UIUtils::scaleColor(backgroundComponent.colors.normal, 1.8f);
+	backgroundComponent.colors.pressed = UIUtils::scaleColor(backgroundComponent.colors.normal, 1.8f);
 
-	setOnHover([this, backgroundComponent](UIInteractive& obj)
+	setOnHover([this, backgroundComponent](UIInteractive&)
 		{
 			m_background->shape().setFillColor(backgroundComponent.colors.hovered);
 		});
 
-	setOnHoverEnd([this, backgroundComponent](UIInteractive& obj)
+	setOnHoverEnd([this, backgroundComponent](UIInteractive&)
 		{
 			m_background->shape().setFillColor(backgroundComponent.colors.normal);
+		});
+
+	setOnPressed([this, backgroundComponent](UIInteractive&)
+		{
+			m_background->shape().setFillColor(backgroundComponent.colors.pressed);
+		});
+
+	setOnReleased([this, backgroundComponent](UIInteractive&, bool isHit)
+		{
+			m_background->shape().setFillColor(backgroundComponent.colors.normal);
+		});
+}
+
+void LobbyPlayerView::initInputActions()
+{
+	setOnMouseUp([](UIInteractive& element, bool isHit) { element.releaseInput(); });
+	setOnHandleEvents([](UIInteractive& element, const InputState& inputState, const sf::Event& event)
+		{
+			if (const auto* e = event.getIf<sf::Event::MouseButtonReleased>())
+			{
+				if (e->button == sf::Mouse::Button::Left)
+				{
+					bool isHit = element.hitTest(inputState.mouseWorldPosition);
+					element.onMouseUp(isHit);
+
+					return;
+				}
+			}
 		});
 }
 

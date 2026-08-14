@@ -39,7 +39,8 @@ private:
 	void init(sf::Vector2f size, const sf::Font& font, const std::string& nickaname);
 	void initBackground();
 	void initNickname(const sf::Font& font, const std::string& nickname);
-	void initOnHover();
+	void initColors();
+	void initInputActions();
 
 	void drawSelf(sf::RenderTarget& target, sf::RenderStates states) const override {}
 };

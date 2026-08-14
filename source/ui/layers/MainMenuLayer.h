@@ -6,7 +6,7 @@
 class MainMenuLayer : public ILayer
 {
 public:
-	MainMenuLayer(GameContext& gameContext, sf::Vector2f size) : ILayer(gameContext, size)
+	MainMenuLayer(GameContext& gameContext, InputCapture& inputCapture, sf::Vector2f size) : ILayer(gameContext, inputCapture, size)
 	{
 		init();
 	}

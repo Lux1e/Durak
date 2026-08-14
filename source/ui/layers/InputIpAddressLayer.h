@@ -10,7 +10,7 @@ class Button;
 class InputIpAddressLayer : public ILayer
 {
 public:
-	InputIpAddressLayer(GameContext& gameContext, sf::Vector2f size) : ILayer(gameContext, size)
+	InputIpAddressLayer(GameContext& gameContext, InputCapture& inputCapture, sf::Vector2f size) : ILayer(gameContext, inputCapture, size)
 	{
 		init();
 	}

@@ -3,6 +3,7 @@
 #include "Panel.h"
 #include "UIInteractive.h"
 #include "../../game/GameContext.h"
+#include "../../core/input/InputCapture.h"
 
 
 class EventSystem;
@@ -13,47 +14,16 @@ class EventInitiator;
 class ILayer : public Trackable
 {
 public:
-	ILayer(GameContext& gameContext, sf::Vector2f size) : m_gameContext(gameContext), m_size(size)
+	ILayer(GameContext& gameContext, InputCapture& inputCapture, sf::Vector2f size) : m_gameContext(gameContext), m_inputCapture(inputCapture), m_size(size)
 	{
 		m_isVisible = true;
 		m_isModal = false;
-		m_underMouseElement = nullptr;
 	}
 
 	virtual ~ILayer() = 0;
 
-	virtual void mouseInputUpdate()
-	{
-		if (!m_underMouseElement)
-			return;
-
-		if (!m_underMouseElement->isInteractive())
-			return;
-
-		auto& asInteractive = *m_underMouseElement->asInteractive();
-		if (!asInteractive.isPressed())
-			asInteractive.setHovered(true);
-	}
-
-	virtual bool handleEvents(const sf::Event& event)
-	{
-		if (const auto& e = event.getIf<sf::Event::MouseButtonPressed>())
-		{
-			if (e->button == sf::Mouse::Button::Left)
-				return onMousePressedEvent();
-		}
-
-		if (const auto& e = event.getIf<sf::Event::MouseButtonReleased>())
-		{
-			if (e->button == sf::Mouse::Button::Left)
-				return onMouseReleasedEvent();
-		}
-
-		return false;
-	};
-
+	virtual bool handleEvents(const sf::Event& event) { return false; };
 	virtual void update(float dt) {}
-
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states)
 	{
 		if (!m_isVisible) return;
@@ -76,32 +46,11 @@ public:
 		return nullptr;
 	}
 
-	void setUnderMouseElement(UIElement& element)
-	{
-		m_underMouseElement = &element;
-	}
-
-	const UIElement* getUnderMouseElement() const
-	{
-		return m_underMouseElement;
-	}
-
-	virtual void underMouseEnd()
-	{
-		assert(m_underMouseElement);
-
-		if (m_underMouseElement->isInteractive())
-		{
-			auto* interactivePtr = m_underMouseElement->asInteractive();
-			interactivePtr->setHovered(false);
-			interactivePtr->setPressed(false, false);
-		}
-
-		m_underMouseElement = nullptr;
-	}
-
 	Panel& addPanel(std::unique_ptr<Panel> panel)
 	{
+		panel->setGameContext(m_gameContext);
+		panel->setInputCapture(m_inputCapture);
+
 		m_panels.push_back(std::move(panel));
 		return *m_panels.back().get();
 	}
@@ -138,6 +87,7 @@ public:
 
 protected:
 	GameContext& m_gameContext;
+	InputCapture& m_inputCapture;
 
 	sf::Vector2f m_size;
 	bool m_isVisible;
@@ -145,41 +95,7 @@ protected:
 
 	std::vector<std::unique_ptr<Panel>> m_panels;
 	std::vector<Panel*> m_panelsToDelete;
-
-	UIElement* m_underMouseElement;
-
-
-	virtual bool onMousePressedEvent()
-	{
-		if (m_underMouseElement)
-		{
-			if (m_underMouseElement->isInteractive())
-				m_underMouseElement->asInteractive()->setPressed(true);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	virtual bool onMouseReleasedEvent()
-	{
-		if (m_underMouseElement)
-		{
-			if (UIInteractive* interactive = m_underMouseElement->asInteractive(); interactive && interactive->isPressed())
-			{
-				bool isHit = m_underMouseElement->hitTest(m_gameContext.input.mouseWorldPosition);
-				interactive->setPressed(false, isHit);
-
-				if (isHit)
-					interactive->onClick();
-			}
-
-			return true;
-		}
-
-		return false;
-	}
 };
+
 
 inline ILayer::~ILayer() {};

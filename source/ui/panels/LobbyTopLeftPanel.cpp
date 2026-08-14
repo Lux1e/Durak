@@ -238,8 +238,6 @@ void LobbyTopLeftPanel::initLockButton(const ClientLobbyState& clientLobbyState,
 
 	if (clientContext.localRole == ClientRole::Regular)
 	{
-		m_lockButton->blockHovered();
-		m_lockButton->blockPressed();
-		m_lockButton->blockClick();
+		m_lockButton->blockInteraction();
 	}
 }

@@ -20,140 +20,83 @@ public:
 	virtual ~UIInteractive() = 0;
 
 
-	bool isInteractive() const override { return true; }
-	UIInteractive* asInteractive() override { return this; }
+	bool isInteractive() const override;
+	UIInteractive* asInteractive() override;
 
-	void setOnHover(std::function<void(UIInteractive&)> func) { onHover = std::move(func); }
-	void setOnHoverEnd(std::function<void(UIInteractive&)> func) { onHoverEnd = std::move(func); }
-	void setOnPressed(std::function<void(UIInteractive&)> func) { onPressed = std::move(func); }
-	void setOnReleased(std::function<void(UIInteractive&, bool isHit)> func) { onReleased = std::move(func); }
+	void captureInput();
+	void releaseInput();
+	bool isCaptured() const;
 
-	void setOnClick(std::function<void()> func) { m_onClick = std::move(func); };
-	void onClick() { if (m_onClick) m_onClick(); }
+	void setOnInputUpdate(std::function<void(UIInteractive&, const InputState&)> func);
+	void setOnHandleEvents(std::function<void(UIInteractive&, const InputState&, const sf::Event&)> func);
 
-	void setHovered(bool value) { onHoverChanged(value); }
-	void setPressed(bool value, bool isHit = true) { onPressedChanged(value, isHit); }
+	void inputUpdate(const InputState& inputState);
 
-	bool isHovered() const { return control.interaction.hovered; }
-	bool isPressed() const { return control.interaction.pressed; }
+	void handleEvents(const InputState& inputState, const sf::Event& event);
 
+	void setOnCaptureEnd(std::function<void(UIInteractive&)> func);
+	void onCaptureEnd();
 
-	void blockHovered()
-	{
-		if (control.locks.hover == 0)
-			setHovered(false);
+	void setOnMouseDown(std::function<void(UIInteractive&)> func);
+	void setOnMouseUp(std::function<void(UIInteractive&, bool)> func);
 
-		++control.locks.hover;
-	}
+	void onMouseDown();
+	void onMouseUp(bool isHit);
 
-	void blockPressed()
-	{
-		if (control.locks.press == 0)
-			setPressed(false);
+	void setOnHover(std::function<void(UIInteractive&)> func);
+	void setOnHoverEnd(std::function<void(UIInteractive&)> func);
+	void setOnPressed(std::function<void(UIInteractive&)> func);
+	void setOnReleased(std::function<void(UIInteractive&, bool isHit)> func);
 
-		++control.locks.press;
-	}
+	void setOnClick(std::function<void()> func);
+	void onClick();
 
-	void blockClick()
-	{
-		++control.locks.click;
-	}
+	void setHovered(bool value);
+	void setDragged(bool value);
 
-	void blockFullActions()
-	{
-		blockHovered();
-		blockPressed();
-		blockClick();
-	}
+	bool isHovered() const;
+	bool isPressed() const;
+	bool isDragged() const;
 
+	void blockHover();
+	void blockPress();
+	void blockClick();
+	void blockDrag();
 
-	void unblockHovered()
-	{
-		if (control.locks.hover > 0)
-			--control.locks.hover;
-	}
+	void blockInteraction();
 
-	void unblockPressed()
-	{
-		if (control.locks.press > 0)
-			--control.locks.press;
-	}
+	void unblockHover();
+	void unblockPress();
+	void unblockClick();
+	void unblockDrag();
 
-	void unblockClick()
-	{
-		if (control.locks.click > 0)
-			--control.locks.click;
-	}
+	void unblockInteraction();
 
-	void unblockFullActions()
-	{
-		unblockHovered();
-		unblockPressed();
-		unblockClick();
-	}
-
-
-	bool canBeHovered() const { return control.locks.hover == 0; }
-	bool canBePressed() const { return control.locks.press == 0; }
-	bool canBeClicked() const { return control.locks.click == 0; }
+	bool canBeHovered() const;
+	bool canBePressed() const;
+	bool canBeClicked() const;
+	bool canBeDragged() const;
 
 protected:
-	void onHoverChanged(bool value)
-	{
-		if (value == control.interaction.hovered)
-			return;
+	void setPressed(bool value, bool isHit = true);
 
-		if (!canBeHovered())
-			return;
-
-		control.interaction.hovered = value;
-
-		if (control.interaction.hovered)
-		{
-			if (onHover)
-				onHover(*this);
-		}
-
-		else
-		{
-			if (onHoverEnd)
-				onHoverEnd(*this);
-		}
-	}
-
-	void onPressedChanged(bool value, bool isHit)
-	{
-		if (value == control.interaction.pressed)
-			return;
-
-		if (!canBePressed())
-			return;
-
-		control.interaction.pressed = value;
-
-		if (control.interaction.pressed)
-		{
-			if (onPressed)
-				onPressed(*this);
-		}
-
-		else
-		{
-			if (onReleased)
-				onReleased(*this, isHit);
-
-			if (isHit && canBeHovered())
-				setHovered(true);
-		}
-	}
+	void applyDrag(const InputState& inputState);
 
 private:
 	ControlState control;
 
-	std::function<void(UIInteractive&)> onHover;
-	std::function<void(UIInteractive&)> onHoverEnd;
-	std::function<void(UIInteractive&)> onPressed;
-	std::function<void(UIInteractive&, bool isHit)> onReleased;
+	std::function<void(UIInteractive&, const InputState&)> m_onInputUpdate;
+	std::function<void(UIInteractive&, const InputState&, const sf::Event& event)> m_onHandleEvents;
+
+	std::function<void(UIInteractive&)> m_onCaptureEnd;
+
+	std::function<void(UIInteractive&)> m_onMouseDown;
+	std::function<void(UIInteractive&, bool)> m_onMouseUp;
+
+	std::function<void(UIInteractive&)> m_onHover;
+	std::function<void(UIInteractive&)> m_onHoverEnd;
+	std::function<void(UIInteractive&)> m_onPressed;
+	std::function<void(UIInteractive&, bool isHit)> m_onReleased;
 
 	std::function<void()> m_onClick;
 };

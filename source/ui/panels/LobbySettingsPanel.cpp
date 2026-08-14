@@ -10,9 +10,15 @@
 
 
 
-void LobbySettingsPanel::init(const ClientLobbyState& clientLobbyState, const GameContext& gameContext, const ClientContext& clientContext)
+void LobbySettingsPanel::init(const ClientLobbyState& clientLobbyState, GameContext& gameContext, const ClientContext& clientContext)
 {
+	assert(m_inputCapture);
+
 	setTransparentToInput(true);
+
+	m_gameModeDropdown = std::make_unique<Dropdown>(gameContext);
+	m_gameSpeedDropdown = std::make_unique<Dropdown>(gameContext);
+	m_deckDropdown = std::make_unique<Dropdown>(gameContext);
 
 	RectangleElement& background = static_cast<RectangleElement&>(addChild(std::make_unique<RectangleElement>(m_size)));
 	background.shape().setFillColor({ 20, 20, 35, 255 });
@@ -33,7 +39,7 @@ void LobbySettingsPanel::init(const ClientLobbyState& clientLobbyState, const Ga
 }
 
 
-void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobbyState, const GameContext& gameContext, const ClientContext& clientContext)
+void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobbyState, GameContext& gameContext, const ClientContext& clientContext)
 {
 	RectangleElement& test = static_cast<RectangleElement&>(m_topSettingsPanel->addChild(std::make_unique<RectangleElement>()));
 	test.setSize(m_topSettingsPanel->getSize());
@@ -63,9 +69,9 @@ void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobb
 	gameSpeedText.setSize(textElementSize);
 	deckText.setSize(textElementSize);
 
-	gameModeText.setCharacterSize(18);
-	gameSpeedText.setCharacterSize(18);
-	deckText.setCharacterSize(18);
+	gameModeText.setCharacterSize(buttonsSize.y * 0.5f);
+	gameSpeedText.setCharacterSize(buttonsSize.y * 0.5f);
+	deckText.setCharacterSize(buttonsSize.y * 0.5f);
 
 	gameModeText.setOrigin({ gameModeText.getSize().x, 0.0f });
 	gameSpeedText.setOrigin({ gameSpeedText.getSize().x, 0.0f });
@@ -111,59 +117,6 @@ void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobb
 	deckList.setPosition(deckButton.getBottomLeftPosition());
 	deckList.setVisible(false);
 
-	gameModeList.setOnChildClick([gameModeListPtr = &gameModeList, gameModeButtonPtr = &gameModeButton](UIElement& element)
-		{
-			for (auto& child : gameModeListPtr->getAllChildren())
-				child->setVisible(true);
-
-			auto& button = static_cast<Button&>(element);
-			button.setVisible(false);
-
-			TextElement* buttonListText = static_cast<TextElement*>(button.getTextElement());
-			TextElement* mainButtonText = static_cast<TextElement*>(gameModeButtonPtr->getTextElement());
-
-			assert(buttonListText);
-			assert(mainButtonText);
-
-			mainButtonText->setString(buttonListText->getString());
-			mainButtonText->setTextAlign(TextElement::TextAlign::Left);
-
-			gameModeListPtr->setVisible(false);
-		});
-
-	gameModeButton.setOnClick([gameModeListPtr = &gameModeList]()
-		{
-			if (gameModeListPtr)
-				gameModeListPtr->isVisible() ? gameModeListPtr->setVisible(false) : gameModeListPtr->setVisible(true);
-		});
-
-
-	gameSpeedList.setOnChildClick([gameSpeedListPtr = &gameSpeedList, gameSpeedButtonPtr = &gameSpeedButton](UIElement& element)
-		{
-			for (auto& child : gameSpeedListPtr->getAllChildren())
-				child->setVisible(true);
-
-			auto& button = static_cast<Button&>(element);
-			button.setVisible(false);
-
-			TextElement* buttonListText = static_cast<TextElement*>(button.getTextElement());
-			TextElement* mainButtonText = static_cast<TextElement*>(gameSpeedButtonPtr->getTextElement());
-
-			assert(buttonListText);
-			assert(mainButtonText);
-
-			mainButtonText->setString(buttonListText->getString());
-			mainButtonText->setTextAlign(TextElement::TextAlign::Left);
-
-			gameSpeedListPtr->setVisible(false);
-		});
-
-	gameSpeedButton.setOnClick([gameSpeedListPtr = &gameSpeedList]()
-		{
-			if (gameSpeedListPtr)
-				gameSpeedListPtr->isVisible() ? gameSpeedListPtr->setVisible(false) : gameSpeedListPtr->setVisible(true);
-		});
-
 
 	builder.setButtonType(ButtonType::Rectangle);
 	style = ButtonStyleFactory::makeStandardStyle();
@@ -176,8 +129,8 @@ void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobb
 	builder.setText("Teams");
 	Button& teamsButton = static_cast<Button&>(gameModeList.addChild(builder.build()));
 
-	m_gameModeDropdown.setMainElement(gameModeButton);
-	m_gameModeDropdown.setListBox(gameModeList);
+	m_gameModeDropdown->setMainElement(gameModeButton);
+	m_gameModeDropdown->setListBox(gameModeList);
 
 
 	builder.setText("No Timer");
@@ -189,8 +142,45 @@ void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobb
 	builder.setText("Fast");
 	Button& fastButton = static_cast<Button&>(gameSpeedList.addChild(builder.build()));
 
-	m_gameSpeedDropdown.setMainElement(gameSpeedButton);
-	m_gameSpeedDropdown.setListBox(gameSpeedList);
+	m_gameSpeedDropdown->setMainElement(gameSpeedButton);
+	m_gameSpeedDropdown->setListBox(gameSpeedList);
+
+
+	m_gameModeDropdown->setOnListBoxChildAction([this](UIInteractive& element)
+		{
+			Button* mainButton = static_cast<Button*>(m_gameModeDropdown->getMainElement());
+			TextElement* mainText = static_cast<TextElement*>(mainButton->getTextElement());
+			Button& listButton = static_cast<Button&>(element);
+			TextElement* listText = static_cast<TextElement*>(listButton.getTextElement());
+
+			assert(mainButton);
+			assert(mainText);
+			assert(listText);
+
+			mainText->setString(listText->getString());
+			for (auto& child : m_gameModeDropdown->getListBox()->getAllChildren())
+				child->setVisible(true);
+
+			listButton.setVisible(false);
+		});
+
+	m_gameSpeedDropdown->setOnListBoxChildAction([this](UIInteractive& element)
+		{
+			Button* mainButton = static_cast<Button*>(m_gameSpeedDropdown->getMainElement());
+			TextElement* mainText = static_cast<TextElement*>(mainButton->getTextElement());
+			Button& listButton = static_cast<Button&>(element);
+			TextElement* listText = static_cast<TextElement*>(listButton.getTextElement());
+
+			assert(mainButton);
+			assert(mainText);
+			assert(listText);
+
+			mainText->setString(listText->getString());
+			for (auto& child : m_gameSpeedDropdown->getListBox()->getAllChildren())
+				child->setVisible(true);
+
+			listButton.setVisible(false);
+		});
 
 
 	updateSettings(clientLobbyState, clientContext);
@@ -201,29 +191,29 @@ void LobbySettingsPanel::updateSettings(const ClientLobbyState& clientLobbyState
 {
 	//to do
 
-	Button& gameModeMainButton = static_cast<Button&>(m_gameModeDropdown.getMainElement());
+	Button& gameModeMainButton = static_cast<Button&>(*m_gameModeDropdown->getMainElement());
 	TextElement* gameModeString = static_cast<TextElement*>(gameModeMainButton.getTextElement());
-	
+
 	gameModeString->setString("Classic");
 	gameModeString->setTextAlign(TextElement::TextAlign::Left);
 
-	for (auto& child : m_gameModeDropdown.getListBox().getAllChildren())
+	for (auto& child : m_gameModeDropdown->getListBox()->getAllChildren())
 	{
 		Button& button = static_cast<Button&>(*child.get());
 		TextElement& text = *static_cast<TextElement*>(button.getTextElement());
-		
+
 		if (text.getString() == gameModeString->getString())
 			button.setVisible(false);
 	}
-	
 
-	Button& gameSpeedMainButton = static_cast<Button&>(m_gameSpeedDropdown.getMainElement());
+
+	Button& gameSpeedMainButton = static_cast<Button&>(*m_gameSpeedDropdown->getMainElement());
 	TextElement* gameSpeedString = static_cast<TextElement*>(gameSpeedMainButton.getTextElement());
 
 	gameSpeedString->setString("No Timer");
 	gameSpeedString->setTextAlign(TextElement::TextAlign::Left);
 
-	for (auto& child : m_gameSpeedDropdown.getListBox().getAllChildren())
+	for (auto& child : m_gameSpeedDropdown->getListBox()->getAllChildren())
 	{
 		Button& button = static_cast<Button&>(*child.get());
 		TextElement& text = *static_cast<TextElement*>(button.getTextElement());
@@ -236,7 +226,7 @@ void LobbySettingsPanel::updateSettings(const ClientLobbyState& clientLobbyState
 
 	if (clientContext.localRole == ClientRole::Regular)
 	{
-		gameModeMainButton.blockFullActions();
-		gameSpeedMainButton.blockFullActions();
+		gameModeMainButton.blockInteraction();
+		gameSpeedMainButton.blockInteraction();
 	}
 }

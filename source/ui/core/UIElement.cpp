@@ -1,5 +1,4 @@
 #include "UIElement.h"
-#include "UIInteractive.h"
 
 
 
@@ -217,6 +216,9 @@ sf::Vector2f UIElement::getGlobalSize() const
 UIElement& UIElement::addChild(std::unique_ptr<UIElement> child)
 {
 	child->m_parent = this;
+	if (m_inputCapture)
+		child->setInputCapture(*m_inputCapture);
+
 	m_children.push_back(std::move(child));
 	onChildAdded(*m_children.back());
 
@@ -261,6 +263,9 @@ std::vector<std::unique_ptr<UIElement>>& UIElement::getAllChildren()
 
 void UIElement::setVisible(bool value)
 {
+	if (m_isVisible == value)
+		return;
+
 	m_isVisible = value;
 	if (m_parent)
 		m_parent->onChildVisibilityChanged(*this);
@@ -292,21 +297,12 @@ bool UIElement::isTransparentToInput() const
 	return m_isTransparentToInput;
 }
 
-void UIElement::blockDraggable()
-{
-	++m_dragLocks;
-}
 
-void UIElement::unblockDraggable()
+void UIElement::setInputCapture(InputCapture& inputCapture)
 {
-	if (m_dragLocks > 0)
-		--m_dragLocks;
-}
-
-
-bool UIElement::isDraggable() const
-{
-	return m_dragLocks == 0;
+	m_inputCapture = &inputCapture;
+	for (auto& child : m_children)
+		child->setInputCapture(inputCapture);
 }
 
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "../core/scene/IScene.h"
+#include "../core/input/InputCapture.h"
 
 
 
@@ -7,7 +8,7 @@ class UIController
 {
 public:
 	UIController() = default;
-	UIController(std::unique_ptr<IScene> scene, const sf::Vector2f& windowSize) : currentScene(std::move(scene)), m_windowSize(windowSize)
+	UIController(GameContext& gameContext, std::unique_ptr<IScene> scene, const sf::Vector2f& windowSize) : m_gameContext(&gameContext), currentScene(std::move(scene)), m_windowSize(windowSize)
 	{
 		currentScene->init(m_windowSize);
 	}
@@ -31,10 +32,17 @@ public:
 	void setScene(std::unique_ptr<IScene> scene);
 	const IScene& getCurrentScene() const;
 
+	void setGameContext(GameContext& gameContext);
+	GameContext* getGameContext() const;
+
+	InputCapture& getInputCapture();
+
 private:
 	void subscribeAll();
 	void cleanSceneToDelete();
 
+	GameContext* m_gameContext = nullptr;
+	InputCapture m_inputCapture;
 	sf::Vector2f m_windowSize;
 
 	std::unique_ptr<IScene> currentScene;

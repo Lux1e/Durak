@@ -14,7 +14,7 @@ struct InputIpAddressRequestEvent;
 class TestMenuScene final : public IScene
 {
 public:
-	TestMenuScene(GameContext& gameContext) : IScene(gameContext)
+	TestMenuScene(GameContext& gameContext, InputCapture& inputCapture) : IScene(gameContext, inputCapture)
 	{
 		subscribeAll();
 	}
@@ -22,7 +22,7 @@ public:
 	void init(const sf::Vector2f& windowSize) override;
 
 private:
-	void subscribeAll() override;
+	void subscribeAll();
 
 	ILayer* m_mainMenuLayer = nullptr;
 	ILayer* m_settingsLayer = nullptr;

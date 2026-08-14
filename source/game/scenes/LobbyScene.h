@@ -12,7 +12,7 @@ struct SnapshotAppliedEvent;
 class LobbyScene : public IScene
 {
 public:
-	LobbyScene(GameContext& gameContext, const ClientContext& context, const ClientLobbyState& clientLobbyState) : IScene(gameContext), m_localContext(context), m_lobbyState(&clientLobbyState)
+	LobbyScene(GameContext& gameContext, InputCapture& inputCapture, const ClientContext& context, const ClientLobbyState& clientLobbyState) : IScene(gameContext, inputCapture), m_localContext(context), m_lobbyState(&clientLobbyState)
 	{
 		subscribeAll();
 	}
@@ -21,7 +21,7 @@ public:
 	void init(const sf::Vector2f& windowSize) override;
 
 private:
-	void subscribeAll() override;
+	void subscribeAll();
 
 	void rebuildScene();
 	void resyncScene();

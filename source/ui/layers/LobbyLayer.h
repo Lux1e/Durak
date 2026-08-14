@@ -1,6 +1,5 @@
 #pragma once
 #include "../core/ILayer.h"
-#include "../controllers/DragController.h"
 #include "../../protocol/ClientRole.h"
 #include "../LobbyPlayerView.h"
 #include "../../game/GameContext.h"
@@ -24,7 +23,8 @@ struct PlayersPerGameChangedEvent;
 class LobbyLayer : public ILayer
 {
 public:
-	LobbyLayer(GameContext& gameContext, sf::Vector2f size, const ClientLobbyState& clientLobbyState, const ClientContext& context) : ILayer(gameContext, size), m_clientLobbyState(&clientLobbyState), m_clientContext(context)
+	LobbyLayer(GameContext& gameContext, InputCapture& inputCapture, sf::Vector2f size, const ClientLobbyState& clientLobbyState, const ClientContext& context) :
+		ILayer(gameContext, inputCapture, size), m_clientLobbyState(&clientLobbyState), m_clientContext(context)
 	{
 		init();
 	}
@@ -58,8 +58,6 @@ private:
 
 	const ClientLobbyState* m_clientLobbyState;
 	const ClientContext& m_clientContext;
-
-	DragController m_dragController;
 
 	std::unordered_map<uint32_t, LobbyPlayerView*> m_playersById;
 
@@ -95,31 +93,20 @@ private:
 	template <AnimationType T, typename... Args>
 	T& applyMoveAnimationToPlayer(LobbyPlayerView& player, Args&&... args)
 	{
-		if (UIElement* element = m_dragController.getDraggingElement())
-		{
-			if (element == &player)
-				m_dragController.endDragging();
-		}
+		assert(!player.isDragged());
 
-		player.setHovered(false);
-		player.setPressed(false, false);
-
-		player.blockDraggable();
-		player.blockHovered();
-		player.blockPressed();
+		player.blockInteraction();
 
 		T& animation = player.addAnimation<T>(std::forward<Args>(args)...);
 		animation.setOnFinish([playerPtr = &player]()
 			{
-				playerPtr->unblockHovered();
-				playerPtr->unblockPressed();
-				playerPtr->unblockDraggable();
+				playerPtr->unblockInteraction();
 			});
 
 		return animation;
 	}
 
-	bool onLobbyPlayerViewDrop(LobbyPlayerView& player);
+	void onLobbyPlayerViewDrop(LobbyPlayerView& player);
 
 	bool canChangePosition();
 	bool canSwapPositions();

@@ -81,18 +81,6 @@ void ExitConfirmationLayer::initExitConfirmationPanel(Panel& exitConfirmationPan
 
 bool ExitConfirmationLayer::handleEvents(const sf::Event& event)
 {
-	if (auto e = event.getIf<sf::Event::MouseButtonPressed>())
-	{
-		if (e->button == sf::Mouse::Button::Left)
-			return onMousePressedEvent();
-	}
-
-	if (auto e = event.getIf<sf::Event::MouseButtonReleased>())
-	{
-		if (e->button == sf::Mouse::Button::Left)
-			return onMouseReleasedEvent();
-	}
-
 	if (auto e = event.getIf<sf::Event::KeyReleased>())
 	{
 		if (e->scancode == sf::Keyboard::Scan::Escape)
