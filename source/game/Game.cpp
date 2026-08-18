@@ -7,7 +7,7 @@
 #include "events/requests/JoinGameRequestEvent.h"
 
 
-
+#include <iostream>
 void Game::init(std::optional<int> profileIndex)
 {
 	Random::get();
@@ -18,14 +18,14 @@ void Game::init(std::optional<int> profileIndex)
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//FOR TESTS:
-	TEST_clientContext.localId = 0;
-	TEST_clientContext.localRole = ClientRole::Host;
+	//TEST_clientContext.localId = 0;
+	//TEST_clientContext.localRole = ClientRole::Host;
 
-	TEST_clientLobbyState.setPlayersPerGame(4);
-	TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(0, "Player", ClientRole::Host), 0);
-	TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(1, "Player1", ClientRole::Regular), 1);
-	TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(2, "Player2", ClientRole::Regular), -1);
-	TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(3, "Player3", ClientRole::Regular), -1);
+	//TEST_clientLobbyState.setPlayersPerGame(4);
+	//TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(0, "Player", ClientRole::Host), 0);
+	//TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(1, "Player1", ClientRole::Regular), 1);
+	//TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(2, "Player2", ClientRole::Regular), -1);
+	//TEST_clientLobbyState.addClientPlayerData(ClientPlayerData(3, "Player3", ClientRole::Regular), -1);
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -35,17 +35,16 @@ void Game::init(std::optional<int> profileIndex)
 	if (profileIndex)
 		m_nickname += std::to_string(*profileIndex);
 
-	m_clientModel = std::make_unique<ClientModel>(ES, loadOrCreateToken(profileIndex), m_nickname, TEST_clientLobbyState);
+	std::cout << m_nickname << std::endl;
+
+	//m_clientModel = std::make_unique<ClientModel>(ES, loadOrCreateToken(profileIndex), m_nickname, TEST_clientLobbyState);
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	uiController.setGameContext(m_gameContext);
 	uiController.setWindowSize(_window.getView().getSize());
 
-	//uiController.setScene(std::make_unique<TestMenuScene>(m_gameContext, uiController.getInputCapture()));
-	uiController.setScene(std::make_unique<LobbyScene>(m_gameContext, uiController.getInputCapture(), TEST_clientContext, TEST_clientLobbyState));
-
-	m_server = nullptr;
-	//m_clientModel = nullptr;
+	uiController.setScene(std::make_unique<TestMenuScene>(m_gameContext, uiController.getInputCapture()));
+	//uiController.setScene(std::make_unique<LobbyScene>(m_gameContext, uiController.getInputCapture(), TEST_clientContext, TEST_clientLobbyState));
 }
 
 void Game::subscribeAll()
@@ -175,5 +174,5 @@ void Game::onJoinGameRequestEvent(const JoinGameRequestEvent& event, const Event
 
 void Game::onWelcomeEvent(const WelcomeEvent& event, const EventInitiator& initiator)
 {
-	//uiController.setScene(std::make_unique<TestLobbyScene>(ES, m_clientModel->getClientContext(), *m_clientModel->getClientLobbyState()));
+	uiController.setScene(std::make_unique<LobbyScene>(m_gameContext, uiController.getInputCapture(), m_clientModel->getClientContext(), *m_clientModel->getClientLobbyState()));
 }

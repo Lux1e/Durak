@@ -49,7 +49,7 @@ public:
 		}
 
 		else
-			if (!m_underMouseElement->isHovered())
+			if (m_underMouseElement && !m_underMouseElement->isHovered())
 				m_underMouseElement->setHovered(true);
 	}
 

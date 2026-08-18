@@ -108,27 +108,9 @@ std::optional<ClientSession*> Server::getClientSessionByToken(uint64_t token)
 
 void Server::eraseClients()
 {
-	std::vector<uint32_t> clientsIds;
-	clientsIds.reserve(clients.size());
-
-	for (auto& c : clients)
-	{
-		if (c.isMarkedToDisconnect() && (c.getOutgoingData().empty() || c.getDisconnectTimer() >= Constants::Timers::MaxDisconnectTime))
+	std::erase_if(clients, [](const ClientSession& client)
 		{
-			clientsIds.push_back(c.getPlayerProfile().value()->getId());
-		}
-	}
-
-	std::erase_if(clients, [clientsIds](ClientSession& c)
-		{
-			auto clientId = c.getPlayerProfile().value()->getId();
-			for (const auto& id : clientsIds)
-			{
-				if (c.isMarkedToDisconnect() && clientId == id)
-					return true;
-			}
-
-			return false;
+			return client.isMarkedToDisconnect() && (client.getOutgoingData().empty() || client.getDisconnectTimer() >= Constants::Timers::MaxDisconnectTime);
 		});
 }
 

@@ -111,7 +111,7 @@ void InputIpAddressLayer::updateIPBox()
 	{
 		if (!m_connectButton->canBeClicked())
 		{
-			m_connectButton->blockInteraction();
+			m_connectButton->unblockInteraction();
 
 			switchConnectButtonColors(valid);
 		}
@@ -121,9 +121,6 @@ void InputIpAddressLayer::updateIPBox()
 	{
 		if (m_connectButton->canBeClicked())
 		{
-			m_connectButton->setHovered(false);
-			//m_connectButton->setPressed(false, false);
-
 			m_connectButton->blockInteraction();
 
 			switchConnectButtonColors(valid);

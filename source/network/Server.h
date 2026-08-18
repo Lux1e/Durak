@@ -62,7 +62,7 @@ private:
 	GameLogic gameLogic;
 
 
-	std::vector<ClientSession> clients;
+	std::deque<ClientSession> clients;
 	std::deque<PlayerProfile> profiles;
 
 

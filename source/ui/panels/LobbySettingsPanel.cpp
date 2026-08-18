@@ -92,9 +92,9 @@ void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobb
 	builder.setFont(Fonts::ArialBD);
 
 	Button& gameModeButton = static_cast<Button&>(m_topSettingsPanel->addChild(builder.build()));
-	//builder.setText("No Timer");
+	builder.setText("No Timer");
 	Button& gameSpeedButton = static_cast<Button&>(m_topSettingsPanel->addChild(builder.build()));
-	//builder.setText("52");
+	builder.setText("52");
 	Button& deckButton = static_cast<Button&>(m_topSettingsPanel->addChild(builder.build()));
 
 	float buttonPositionX = panelSize.x * 0.5f + dropDownOffset.x;
@@ -129,10 +129,6 @@ void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobb
 	builder.setText("Teams");
 	Button& teamsButton = static_cast<Button&>(gameModeList.addChild(builder.build()));
 
-	m_gameModeDropdown->setMainElement(gameModeButton);
-	m_gameModeDropdown->setListBox(gameModeList);
-
-
 	builder.setText("No Timer");
 	Button& noTimerButton = static_cast<Button&>(gameSpeedList.addChild(builder.build()));
 	builder.setText("Slow");
@@ -142,8 +138,20 @@ void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobb
 	builder.setText("Fast");
 	Button& fastButton = static_cast<Button&>(gameSpeedList.addChild(builder.build()));
 
+	builder.setText("36");
+	Button& firstDeckButton = static_cast<Button&>(deckList.addChild(builder.build()));
+	builder.setText("52");
+	Button& secondDeckButton = static_cast<Button&>(deckList.addChild(builder.build()));
+
+
+	m_gameModeDropdown->setMainElement(gameModeButton);
+	m_gameModeDropdown->setListBox(gameModeList);
+
 	m_gameSpeedDropdown->setMainElement(gameSpeedButton);
 	m_gameSpeedDropdown->setListBox(gameSpeedList);
+
+	m_deckDropdown->setMainElement(deckButton);
+	m_deckDropdown->setListBox(deckList);
 
 
 	m_gameModeDropdown->setOnListBoxChildAction([this](UIInteractive& element)
@@ -162,6 +170,8 @@ void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobb
 				child->setVisible(true);
 
 			listButton.setVisible(false);
+
+			//event
 		});
 
 	m_gameSpeedDropdown->setOnListBoxChildAction([this](UIInteractive& element)
@@ -180,6 +190,28 @@ void LobbySettingsPanel::initTopSettingsPanel(const ClientLobbyState& clientLobb
 				child->setVisible(true);
 
 			listButton.setVisible(false);
+
+			//event
+		});
+
+	m_deckDropdown->setOnListBoxChildAction([this](UIInteractive& element)
+		{
+			Button* mainButton = static_cast<Button*>(m_deckDropdown->getMainElement());
+			TextElement* mainText = static_cast<TextElement*>(mainButton->getTextElement());
+			Button& listButton = static_cast<Button&>(element);
+			TextElement* listText = static_cast<TextElement*>(listButton.getTextElement());
+
+			assert(mainButton);
+			assert(mainText);
+			assert(listText);
+
+			mainText->setString(listText->getString());
+			for (auto& child : m_deckDropdown->getListBox()->getAllChildren())
+				child->setVisible(true);
+
+			listButton.setVisible(false);
+
+			//event
 		});
 
 
@@ -195,7 +227,6 @@ void LobbySettingsPanel::updateSettings(const ClientLobbyState& clientLobbyState
 	TextElement* gameModeString = static_cast<TextElement*>(gameModeMainButton.getTextElement());
 
 	gameModeString->setString("Classic");
-	gameModeString->setTextAlign(TextElement::TextAlign::Left);
 
 	for (auto& child : m_gameModeDropdown->getListBox()->getAllChildren())
 	{
@@ -211,7 +242,6 @@ void LobbySettingsPanel::updateSettings(const ClientLobbyState& clientLobbyState
 	TextElement* gameSpeedString = static_cast<TextElement*>(gameSpeedMainButton.getTextElement());
 
 	gameSpeedString->setString("No Timer");
-	gameSpeedString->setTextAlign(TextElement::TextAlign::Left);
 
 	for (auto& child : m_gameSpeedDropdown->getListBox()->getAllChildren())
 	{
@@ -222,11 +252,26 @@ void LobbySettingsPanel::updateSettings(const ClientLobbyState& clientLobbyState
 			button.setVisible(false);
 	}
 
+	
+	Button& deckMainButton = static_cast<Button&>(*m_deckDropdown->getMainElement());
+	TextElement* deckString = static_cast<TextElement*>(deckMainButton.getTextElement());
+
+	deckString->setString("52");
+
+	for (auto& child : m_deckDropdown->getListBox()->getAllChildren())
+	{
+		Button& button = static_cast<Button&>(*child.get());
+		TextElement& text = *static_cast<TextElement*>(button.getTextElement());
+
+		if (text.getString() == deckString->getString())
+			button.setVisible(false);
+	}
 
 
 	if (clientContext.localRole == ClientRole::Regular)
 	{
 		gameModeMainButton.blockInteraction();
 		gameSpeedMainButton.blockInteraction();
+		deckMainButton.blockInteraction();
 	}
 }
