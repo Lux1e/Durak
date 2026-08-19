@@ -24,6 +24,8 @@
 #include "../LobbyPlayerView.h"
 #include "../../game/events/requests/SeatPositionsChangeRequestEvent.h"
 #include "../../game/events/requests/SeatPositionsSwapRequestEvent.h"
+#include "../../game/events/domain/PlayerConnectedEvent.h"
+#include "../../game/events/domain/PlayerDisconnectedEvent.h"
 #include "../../game/events/domain/SeatPositionsChangedEvent.h"
 #include "../../game/events/domain/SeatPositionsSwappedEvent.h"
 #include "../../game/events/domain/PlayersPerGameChangedEvent.h"
@@ -206,6 +208,7 @@ void LobbyLayer::subscribeAll()
 	m_gameContext.ES.subscribe<SeatPositionsChangedEvent>(this, &LobbyLayer::onSeatPositionsChangedEvent);
 	m_gameContext.ES.subscribe<SeatPositionsSwappedEvent>(this, &LobbyLayer::onSeatPositionsSwappedEvent);
 	m_gameContext.ES.subscribe<PlayersPerGameChangedEvent>(this, &LobbyLayer::onPlayersPerGameChangedEvent);
+	m_gameContext.ES.subscribe<PlayerConnectedEvent>(this, &LobbyLayer::onPlayerConnectedEvent);
 }
 
 
@@ -281,6 +284,10 @@ void LobbyLayer::addPlayer(uint32_t id, std::string nickname, ClientRole role, i
 			LobbyPlayerView& player = static_cast<LobbyPlayerView&>(element);
 			onLobbyPlayerViewDrop(player);
 		});
+
+
+	if (m_clientContext.localRole == ClientRole::Regular && player.getId() != m_clientContext.localId)
+		player.blockInteraction();
 }
 
 void LobbyLayer::removePlayer(uint32_t id)
@@ -436,6 +443,20 @@ void LobbyLayer::updatePlayersSeatsInQueue()
 			return;
 		}
 	}
+}
+
+
+void LobbyLayer::onPlayerConnectedEvent(const PlayerConnectedEvent& event, const EventInitiator& initiator)
+{
+	auto it = m_playersById.find(event.playerId);
+	assert(it == m_playersById.end());
+
+	addPlayer(event.playerId, event.playerNickname, event.playerRole, event.playerSeatPosition);
+}
+
+void LobbyLayer::onPlayerDisconnectedEvent(const PlayerDisconnectedEvent& event, const EventInitiator& initiator)
+{
+	// to do
 }
 
 

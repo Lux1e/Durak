@@ -116,10 +116,10 @@ Packet PacketFactory::makeNotifyConnectionWithPlayerLostPacket(uint32_t playerId
 }
 
 
-Packet PacketFactory::makeSeatPositionsChangeRequestPacket(uint32_t playerToMoveId, int newSeatPosition)
+Packet PacketFactory::makeSeatPositionsChangeRequestPacket(uint32_t playerId, int newSeatPosition)
 {
 	Packet packet(PacketType::SeatPositionsChangeRequest);
-	packet.write(playerToMoveId);
+	packet.write(playerId);
 	packet.write(newSeatPosition);
 
 	return packet;

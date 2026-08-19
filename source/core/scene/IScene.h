@@ -143,10 +143,10 @@ protected:
 	InputCapture& m_inputCapture;
 	sf::Vector2f m_size;
 
+private:
 	std::vector<std::unique_ptr<ILayer>> m_layers;
 	std::vector<ILayer*> m_layersToDelete;
 
-private:
 	UIInteractive* m_underMouseElement = nullptr;
 
 	UIElement* findUnderMouseElement()

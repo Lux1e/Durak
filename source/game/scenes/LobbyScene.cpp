@@ -20,6 +20,7 @@ void LobbyScene::subscribeAll()
 
 void LobbyScene::rebuildScene()
 {
+	eraseLayer(*m_lobbyLayer);
 	init(m_size);
 }
 

@@ -14,6 +14,8 @@ class LobbySeatsPanel;
 class LobbyTopLeftPanel;
 class LobbyTablePanel;
 class LobbySettingsPanel;
+struct PlayerConnectedEvent;
+struct PlayerDisconnectedEvent;
 struct SeatPositionsChangedEvent;
 struct SeatPositionsSwappedEvent;
 struct PlayersPerGameChangedEvent;
@@ -113,6 +115,9 @@ private:
 
 	void updatePlayersSeatsInQueue();
 
+
+	void onPlayerConnectedEvent(const PlayerConnectedEvent& event, const EventInitiator& initiator);
+	void onPlayerDisconnectedEvent(const PlayerDisconnectedEvent& event, const EventInitiator& initiator);
 
 	void onSeatPositionsChangedEvent(const SeatPositionsChangedEvent& event, const EventInitiator& initiator);
 	void onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& event, const EventInitiator& initiator);

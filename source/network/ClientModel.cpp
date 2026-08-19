@@ -403,9 +403,12 @@ void ClientModel::onNotifyPlayersPerGameChangedPacket(Packet& packet)
 	uint32_t playersPerGame = packet.read<uint32_t>();
 
 	std::vector<SeatChange> vec = clientLobbyLogic.applyPlayersPerGameChange(playersPerGame);
-	if (!vec.empty())
-		for (auto it : vec)
-			ES.publish<SeatPositionsChangedEvent>({ it.playerId, it.toSeatIndex });
+
+	assert(vec.empty());
+
+	//if (!vec.empty())
+	//	for (auto it : vec)
+	//		ES.publish<SeatPositionsChangedEvent>({ it.playerId, it.toSeatIndex });
 
 	ES.publish<PlayersPerGameChangedEvent>(playersPerGame);
 }
@@ -446,7 +449,11 @@ void ClientModel::onPlayersPerGameChangeRequestEvent(const PlayersPerGameChangeR
 	auto seatPositions = clientLobbyLogic.applyPlayersPerGameChange(event.playersPerGameValue);
 
 	for (const auto& seat : seatPositions)
+	{
 		ES.publish<SeatPositionsChangedEvent>({ seat.playerId, seat.toSeatIndex });
+		client.sendPacket(PacketFactory::makeSeatPositionsChangeRequestPacket(seat.playerId, seat.toSeatIndex));
+	}
 
 	ES.publish<PlayersPerGameChangedEvent>(event.playersPerGameValue);
+	client.sendPacket(PacketFactory::makePlayersPerGameChangeRequestPacket(event.playersPerGameValue));
 }
