@@ -27,6 +27,7 @@ void TestMenuScene::subscribeAll()
 void TestMenuScene::onExitRequestEvent(const ExitRequestEvent& event, const EventInitiator& initiator)
 {
 	m_inputCapture.release();
+	resetUnderMouseElement();
 
 	if (m_exitLayer)
 		m_exitLayer->setVisible(true);
@@ -35,6 +36,7 @@ void TestMenuScene::onExitRequestEvent(const ExitRequestEvent& event, const Even
 void TestMenuScene::onInputIpAddressRequestEvent(const InputIpAddressRequestEvent& event, const EventInitiator& initiator)
 {
 	m_inputCapture.release();
+	resetUnderMouseElement();
 
 	if (m_InputIpAddressLayer)
 		m_InputIpAddressLayer->setVisible(true);

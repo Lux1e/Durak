@@ -143,6 +143,18 @@ protected:
 	InputCapture& m_inputCapture;
 	sf::Vector2f m_size;
 
+	void resetUnderMouseElement()
+	{
+		if (!m_underMouseElement)
+			return;
+
+		m_underMouseElement->setHovered(false);
+		m_underMouseElement->onMouseUp(false);
+		m_underMouseElement->setDragged(false);
+
+		m_underMouseElement = nullptr;
+	}
+
 private:
 	std::vector<std::unique_ptr<ILayer>> m_layers;
 	std::vector<ILayer*> m_layersToDelete;
