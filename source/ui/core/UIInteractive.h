@@ -27,6 +27,8 @@ public:
 	void releaseInput();
 	bool isCaptured() const;
 
+	void resetInteractive();
+
 	void setOnInputUpdate(std::function<void(UIInteractive&, const InputState&)> func);
 	void setOnHandleEvents(std::function<void(UIInteractive&, const InputState&, const sf::Event&)> func);
 

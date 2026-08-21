@@ -35,6 +35,14 @@ bool UIInteractive::isCaptured() const
 }
 
 
+void UIInteractive::resetInteractive()
+{
+	if (isHovered) setHovered(false);
+	if (isPressed) onMouseUp(false);
+	if (isDragged) setDragged(false);
+}
+
+
 void UIInteractive::setOnInputUpdate(std::function<void(UIInteractive&, const InputState&)> func)
 {
 	m_onInputUpdate = std::move(func);
@@ -290,8 +298,6 @@ void UIInteractive::setPressed(bool value, bool isHit)
 
 	if (control.interaction.pressed)
 	{
-		setHovered(false);
-
 		if (m_onPressed)
 			m_onPressed(*this);
 	}
@@ -300,9 +306,6 @@ void UIInteractive::setPressed(bool value, bool isHit)
 	{
 		if (m_onReleased)
 			m_onReleased(*this, isHit);
-
-		if (isHit && control.locks.hover == 0)
-			setHovered(true);
 	}
 }
 

@@ -148,10 +148,7 @@ protected:
 		if (!m_underMouseElement)
 			return;
 
-		m_underMouseElement->setHovered(false);
-		m_underMouseElement->onMouseUp(false);
-		m_underMouseElement->setDragged(false);
-
+		m_underMouseElement->resetInteractive();
 		m_underMouseElement = nullptr;
 	}
 
