@@ -12,7 +12,7 @@ void TestMenuScene::init(const sf::Vector2f& windowSize)
 	m_size = windowSize;
 
 	m_mainMenuLayer = &addLayer(std::make_unique<MainMenuLayer>(m_gameContext, m_inputCapture, m_size));
-	m_InputIpAddressLayer = &addLayer(std::make_unique<InputIpAddressLayer>(m_gameContext, m_inputCapture, m_size));
+	m_inputIpAddressLayer = &addLayer(std::make_unique<InputIpAddressLayer>(m_gameContext, m_inputCapture, m_size));
 	m_exitLayer = &addLayer(std::make_unique<ExitConfirmationLayer>(m_gameContext, m_inputCapture, m_size));
 }
 
