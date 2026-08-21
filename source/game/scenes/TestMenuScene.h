@@ -26,7 +26,7 @@ private:
 
 	ILayer* m_mainMenuLayer = nullptr;
 	ILayer* m_settingsLayer = nullptr;
-	ILayer* m_InputIpAddressLayer = nullptr;
+	ILayer* m_inputIpAddressLayer = nullptr;
 	ILayer* m_popupLayer = nullptr;
 	ILayer* m_exitLayer = nullptr;
 

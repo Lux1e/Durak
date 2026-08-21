@@ -37,9 +37,9 @@ bool UIInteractive::isCaptured() const
 
 void UIInteractive::resetInteractive()
 {
-	if (isHovered) setHovered(false);
-	if (isPressed) onMouseUp(false);
-	if (isDragged) setDragged(false);
+	if (isHovered()) setHovered(false);
+	if (isPressed()) setPressed(false, false);
+	if (isDragged()) setDragged(false);
 }
 
 

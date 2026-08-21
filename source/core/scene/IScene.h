@@ -152,6 +152,13 @@ protected:
 		m_underMouseElement = nullptr;
 	}
 
+	void showModalLayer(ILayer& layer)
+	{
+		m_inputCapture.release();
+		resetUnderMouseElement();
+		layer.setVisible(true);
+	}
+
 private:
 	std::vector<std::unique_ptr<ILayer>> m_layers;
 	std::vector<ILayer*> m_layersToDelete;

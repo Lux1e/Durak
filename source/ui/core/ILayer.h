@@ -79,7 +79,14 @@ public:
 		m_panelsToDelete.clear();
 	}
 
-	void setVisible(bool value) { m_isVisible = value; }
+	void setVisible(bool value)
+	{
+		if (value == m_isVisible)
+			return;
+
+		m_isVisible = value;
+	}
+
 	bool isVisible() const { return m_isVisible; }
 
 	void setModal(bool value) { m_isModal = value; }
