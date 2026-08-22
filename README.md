@@ -1,49 +1,55 @@
-Durak
+# Durak
 
-A multiplayer card game Durak written in modern C++.
+A multiplayer card game written in modern C++.
 
-The project is developed from scratch as a personal C++ project. The main focus is not only the game itself, but also designing a modular application architecture, networking layer, event system and a reusable UI framework.
+This project is developed from scratch as a personal C++ project. The main focus is on practicing modern C++, software architecture, networking, event-driven communication, and UI development.
 
-Technologies
-C++23
-SFML
-STL
-Visual Studio
-Git / GitHub
-Project Structure
+## Technologies
 
-The source code is organized into several independent modules:
+* **C++23**
+* **SFML**
+* **STL**
+* **Visual Studio**
+* **Git / GitHub**
 
+## Project Structure
+
+The source code is organized into several modules:
+
+```text
 source/
-core/
-game/
-network/
-protocol/
-states/
-ui/
-resources/
-testData/
-utils/
-Core
+├── core/
+├── game/
+├── network/
+├── protocol/
+├── states/
+├── ui/
+├── resources/
+├── testData/
+└── utils/
+```
+
+### Core
 
 Contains functionality shared across different parts of the application.
 
 The core module includes:
 
-Event system
-Client context
-Input handling
-Scene management
-Common concepts and utilities
-Animation support
-Debug logging
+* Event system
+* Input handling
+* Scene management
+* Client context
+* Animation support
+* Debug logging
+* Common concepts and utilities
 
-The event system is used to communicate between application components without requiring them to depend directly on each other.
+The event system allows different parts of the application to communicate without being directly coupled to each other.
 
-Game
+### Game
 
 Contains the game and lobby logic.
 
+```text
 game/
 ├── events/
 ├── scenes/
@@ -56,15 +62,17 @@ game/
 ├── ClientPlayerData
 ├── PlayerData
 └── Rules
+```
 
-Game rules are separated from the general game logic through the Rules abstraction, with ClassicRules providing the implementation for classic Durak rules.
+Game rules are separated from the general game logic through the `Rules` abstraction, with `ClassicRules` providing the implementation for the classic Durak rules.
 
-Lobby-related functionality is separated from the actual game logic and includes client-side lobby state and player data.
+Lobby-related functionality is separated from the game logic and includes lobby state, player data, and client-side lobby logic.
 
-Network
+### Network
 
-The project contains separate client and server components for network communication.
+Contains the client and server networking layer.
 
+```text
 network/
 ├── Client
 ├── Server
@@ -76,29 +84,29 @@ network/
 ├── ClientPacketDispatcher
 ├── ServerPacketDispatcher
 └── ConnectionState
+```
 
 The networking layer is responsible for:
 
-Client/server communication
-Connection management
-Packet creation
-Packet dispatching
-Client sessions
-Tracking pending packets
-Connection state management
+* Client/server communication
+* Connection management
+* Client sessions
+* Packet creation
+* Packet dispatching
+* Pending packet management
+* Connection state management
 
-The network code is separated from the game and UI layers.
+### Protocol
 
-Protocol
+Contains data structures and definitions used for communication between the client and server.
 
-The protocol module contains the definitions used for communication between the client and server.
+The protocol is separated from the networking implementation so that the data being transferred is independent from the connection management itself.
 
-Keeping protocol-related code separate from the networking implementation makes it possible to distinguish what data is transferred from how the connection is managed.
+### UI
 
-UI
+A custom UI system built on top of SFML.
 
-A custom UI system is implemented on top of SFML.
-
+```text
 ui/
 ├── core/
 ├── elements/
@@ -111,93 +119,102 @@ ui/
 ├── ButtonBuilder
 ├── LobbyPlayerView
 └── UIController
+```
 
-The UI system is based around a common UIElement hierarchy.
+The UI is built around a hierarchy of reusable components.
 
-Interactive elements are implemented separately from the base UI element, allowing input handling to be added to components that require it.
+The system separates basic UI elements from interactive elements and organizes the interface using layers, panels, widgets, and reusable UI components.
 
-The UI is organized into layers and reusable components rather than being implemented directly inside game scenes.
-
-Architecture
+## Architecture
 
 The application is divided into several logical layers:
 
-                  ┌───────────────┐
-                  │      UI       │
-                  └───────┬───────┘
-                          │
-                       Events
-                          │
-                  ┌───────▼───────┐
-                  │ Game / Lobby  │
-                  │     Logic     │
-                  └───────┬───────┘
-                          │
-                    Protocol
-                          │
-                  ┌───────▼───────┐
-                  │    Network    │
-                  │ Client/Server │
-                  └───────────────┘
+```text
+                 ┌───────────────┐
+                 │      UI       │
+                 └───────┬───────┘
+                         │
+                      Events
+                         │
+                 ┌───────▼───────┐
+                 │ Game / Lobby  │
+                 │     Logic     │
+                 └───────┬───────┘
+                         │
+                      Protocol
+                         │
+                 ┌───────▼───────┐
+                 │    Network    │
+                 │ Client/Server │
+                 └───────────────┘
+```
 
-The main goal of this separation is to prevent the UI, game logic and networking code from becoming tightly coupled.
+The project is designed to keep the UI, game logic, and networking code separated from each other.
 
-For example, UI components can publish events without directly depending on the implementation of the game or lobby logic.
+The event system is used to connect different parts of the application without requiring direct dependencies between unrelated components.
 
-C++ Features
+## C++ Features
 
 The project uses modern C++ features and practices, including:
 
-RAII
-Smart pointers
-std::unique_ptr
-STL containers
-STL algorithms
-Iterators
-Lambda expressions
-Templates
-Concepts
-Move semantics
-Object-oriented programming
-Compile-time type constraints
+* C++23
+* Object-oriented programming
+* RAII
+* Smart pointers
+* `std::unique_ptr`
+* `std::shared_ptr`
+* STL containers
+* STL algorithms
+* Iterators
+* Lambda expressions
+* Templates
+* Concepts
+* Move semantics
 
-Object ownership and object lifetime are explicitly managed using RAII and smart pointers.
+Particular attention is paid to object ownership and lifetime management using RAII and smart pointers.
 
-Current State
+## Project Status
 
-The project is under active development.
+The project is currently **in development**.
 
-The application architecture, UI framework, lobby system and networking layer are being developed alongside the game itself.
+The UI framework, application architecture, lobby system, and networking layer are being developed alongside the game logic.
 
-The complete game is not finished yet. The project is primarily used as a practical exercise in developing a non-trivial C++ application from scratch.
+The complete game is not finished yet.
 
-Building
-Requirements
-Windows
-Visual Studio
-C++23 compatible compiler
-SFML
-Build
+## Building
+
+### Requirements
+
+* Windows
+* Visual Studio
+* C++23 compatible compiler
+* SFML
+
+### Build
 
 Clone the repository:
 
+```bash
 git clone https://github.com/Lux1e/Durak.git
+```
 
-Open the Visual Studio solution:
+Open the solution in Visual Studio:
 
+```text
 Durak.sln
+```
 
-Build the project using Visual Studio.
+Select the required configuration and build the project.
 
-Project Goals
+## Project Goals
 
-The project was created to gain practical experience with:
+This project was created to gain practical experience with:
 
-Modern C++
-Software architecture
-Object lifetime and ownership
-Event-driven communication
-UI framework development
-Client/server architecture
-Network communication
-Separation of responsibilities between application modules
+* Modern C++
+* Software architecture
+* Object lifetime and ownership
+* Event-driven communication
+* UI framework development
+* Client/server architecture
+* Network communication
+* Separation of responsibilities between application modules
