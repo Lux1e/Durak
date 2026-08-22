@@ -15,15 +15,15 @@ Project Structure
 The source code is organized into several independent modules:
 
 source/
-├── core/
-├── game/
-├── network/
-├── protocol/
-├── states/
-├── ui/
-├── resources/
-├── testData/
-└── utils/
+core/
+game/
+network/
+protocol/
+states/
+ui/
+resources/
+testData/
+utils/
 Core
 
 Contains functionality shared across different parts of the application.
