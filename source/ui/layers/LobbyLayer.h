@@ -19,6 +19,7 @@ struct PlayerDisconnectedEvent;
 struct SeatPositionsChangedEvent;
 struct SeatPositionsSwappedEvent;
 struct PlayersPerGameChangedEvent;
+struct LobbyOpenStateChangedEvent;
 
 
 
@@ -123,4 +124,5 @@ private:
 	void onSeatPositionsSwappedEvent(const SeatPositionsSwappedEvent& event, const EventInitiator& initiator);
 
 	void onPlayersPerGameChangedEvent(const PlayersPerGameChangedEvent& event, const EventInitiator& initiator);
+	void onLobbyOpenStateChangedEvent(const LobbyOpenStateChangedEvent& event, const EventInitiator& initiator);
 };

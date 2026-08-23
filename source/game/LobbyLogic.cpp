@@ -6,18 +6,18 @@
 
 void LobbyLogic::requireState() const
 {
-	assert(statePtr);
+	assert(m_lobbyState);
 }
 
 
 void LobbyLogic::setLobbyState(LobbyState& state)
 {
-	statePtr = &state;
+	m_lobbyState = &state;
 }
 
-bool LobbyLogic::isLobbyState() const
+LobbyState* LobbyLogic::getLobbyState() const
 {
-	return statePtr;
+	return m_lobbyState;
 }
 
 
@@ -25,9 +25,9 @@ std::optional<DisconnectReason> LobbyLogic::isNewPlayerCanJoin() const
 {
 	requireState();
 
-	if (statePtr->getPlayerProfilesInLobby().size() >= Constants::Lobby::MaxPlayersInLobby)
+	if (m_lobbyState->getPlayerProfilesInLobby().size() >= Constants::Lobby::MaxPlayersInLobby)
 		return DisconnectReason::ServerIsFull;
-	if (!statePtr->isLobbyOpen())
+	if (!m_lobbyState->isLobbyOpen())
 		return DisconnectReason::ServerIsClosed;
 
 	return std::nullopt;
@@ -38,7 +38,7 @@ std::optional<DisconnectReason> LobbyLogic::applyPlayerConnectRequest(PlayerProf
 {
 	requireState();
 
-	auto profileOpt = statePtr->getPlayerProfileById(profile.getId());
+	auto profileOpt = m_lobbyState->getPlayerProfileById(profile.getId());
 	if (profileOpt)
 		throw std::logic_error("Player already exist with this id");
 
@@ -50,19 +50,21 @@ std::optional<DisconnectReason> LobbyLogic::applyPlayerConnectRequest(PlayerProf
 	if (profile.getId() == 0)
 	{
 		profile.setRole(ClientRole::Host);
+		m_lobbyState->setHostId(profile.getId());
+
 		isHost = true;
 	}
 
 	if (isHost)
 	{
-		if (!statePtr->isSeatPositionOccupied(0))
-			statePtr->addPlayer(profile, 0);
+		if (!m_lobbyState->isSeatPositionOccupied(0))
+			m_lobbyState->addPlayer(profile, 0);
 		else
-			statePtr->addPlayer(profile, Constants::Lobby::QueueSeat);
+			m_lobbyState->addPlayer(profile, Constants::Lobby::QueueSeat);
 	}
 
 	else
-		statePtr->addPlayer(profile, Constants::Lobby::QueueSeat);
+		m_lobbyState->addPlayer(profile, Constants::Lobby::QueueSeat);
 
 	return std::nullopt;
 }
@@ -70,7 +72,7 @@ std::optional<DisconnectReason> LobbyLogic::applyPlayerConnectRequest(PlayerProf
 void LobbyLogic::applyPlayerDisconnected(uint32_t playerId)
 {
 	requireState();
-	statePtr->deletePlayer(playerId);
+	m_lobbyState->deletePlayer(playerId);
 }
 
 
@@ -78,28 +80,28 @@ bool LobbyLogic::applySeatPositionsChangeRequest(uint32_t playerId, int seatPosi
 {
 	requireState();
 
-	if (!statePtr->canMoveToAnotherSeat() && initiatorId != statePtr->getHostId())
+	if (!m_lobbyState->canMoveToAnotherSeat() && initiatorId != m_lobbyState->getHostId())
 		return false;
 
-	if (!statePtr->isSeatPositionCorrect(seatPosition))
+	if (!m_lobbyState->isSeatPositionCorrect(seatPosition))
 		return false;
 
-	if (statePtr->isSeatPositionOccupied(seatPosition))
+	if (m_lobbyState->isSeatPositionOccupied(seatPosition))
 		return false;
 
-	auto currentSeatPositionOpt = statePtr->getSeatPositionById(playerId);
+	auto currentSeatPositionOpt = m_lobbyState->getSeatPositionById(playerId);
 	if (!currentSeatPositionOpt)
 		return false;
 
 	if (*currentSeatPositionOpt == seatPosition)
 		return false;
 
-	if (!statePtr->getPlayerProfileById(playerId))
+	if (!m_lobbyState->getPlayerProfileById(playerId))
 		return false;
 
 	if (playerId != initiatorId)
 	{
-		auto initiatorOpt = statePtr->getPlayerProfileById(initiatorId);
+		auto initiatorOpt = m_lobbyState->getPlayerProfileById(initiatorId);
 		if (!initiatorOpt)
 			throw std::logic_error("Initiator do not exist in Lobby");
 
@@ -107,7 +109,7 @@ bool LobbyLogic::applySeatPositionsChangeRequest(uint32_t playerId, int seatPosi
 			return false;
 	}
 
-	statePtr->changePlayerSeatPosition(playerId, seatPosition);
+	m_lobbyState->changePlayerSeatPosition(playerId, seatPosition);
 	return true;
 }
 
@@ -115,7 +117,7 @@ bool LobbyLogic::applySeatPositionsSwapRequest(uint32_t firstPlayerId, uint32_t 
 {
 	requireState();
 
-	auto initiatorOpt = statePtr->getPlayerProfileById(initiatorId);
+	auto initiatorOpt = m_lobbyState->getPlayerProfileById(initiatorId);
 	if (!initiatorOpt)
 		return false;
 
@@ -123,15 +125,15 @@ bool LobbyLogic::applySeatPositionsSwapRequest(uint32_t firstPlayerId, uint32_t 
 		return false;
 
 	if (firstPlayerId != initiatorId)
-		if (!statePtr->getPlayerProfileById(firstPlayerId))
+		if (!m_lobbyState->getPlayerProfileById(firstPlayerId))
 			return false;
 
 	if (secondPlayerId != initiatorId)
-		if (!statePtr->getPlayerProfileById(secondPlayerId))
+		if (!m_lobbyState->getPlayerProfileById(secondPlayerId))
 			return false;
 
-	auto currentFirstPlayerSeatPositionOpt = statePtr->getSeatPositionById(firstPlayerId);
-	auto currentSecondPlayerSeatPositionOpt = statePtr->getSeatPositionById(secondPlayerId);
+	auto currentFirstPlayerSeatPositionOpt = m_lobbyState->getSeatPositionById(firstPlayerId);
+	auto currentSecondPlayerSeatPositionOpt = m_lobbyState->getSeatPositionById(secondPlayerId);
 
 	if (!currentFirstPlayerSeatPositionOpt || !currentSecondPlayerSeatPositionOpt)
 		return false;
@@ -139,7 +141,7 @@ bool LobbyLogic::applySeatPositionsSwapRequest(uint32_t firstPlayerId, uint32_t 
 	if (*currentFirstPlayerSeatPositionOpt == *currentSecondPlayerSeatPositionOpt)
 		return false;
 
-	statePtr->swapPlayersSeatPositions(firstPlayerId, secondPlayerId);
+	m_lobbyState->swapPlayersSeatPositions(firstPlayerId, secondPlayerId);
 	return true;
 }
 
@@ -148,14 +150,14 @@ bool LobbyLogic::applyPlayersPerGameChangeRequest(uint32_t value, uint32_t initi
 {
 	requireState();
 
-	auto initiatorOpt = statePtr->getPlayerProfileById(initiatorId);
+	auto initiatorOpt = m_lobbyState->getPlayerProfileById(initiatorId);
 	if (!initiatorOpt)
 		return false;
 
 	if (initiatorOpt.value()->getRole() != ClientRole::Host)
 		return false;
 
-	uint32_t currentPlayersPerGame = statePtr->getPlayersPerGame();
+	uint32_t currentPlayersPerGame = m_lobbyState->getPlayersPerGame();
 	if (value == currentPlayersPerGame)
 		return false;
 
@@ -164,14 +166,23 @@ bool LobbyLogic::applyPlayersPerGameChangeRequest(uint32_t value, uint32_t initi
 
 	if (currentPlayersPerGame > value)
 	{
-		auto& seatPositionState = statePtr->getSeatPositionsState();
+		auto& seatPositionState = m_lobbyState->getSeatPositionsState();
 		for (int i = value; i < currentPlayersPerGame; ++i)
 		{
 			if (auto playerIdOpt = seatPositionState.getPlayerIdBySeatPosition(i))
-				statePtr->changePlayerSeatPosition(*playerIdOpt, Constants::Lobby::QueueSeat);
+				m_lobbyState->changePlayerSeatPosition(*playerIdOpt, Constants::Lobby::QueueSeat);
 		}
 	}
 
-	statePtr->setPlayersPerGame(value);
+	m_lobbyState->setPlayersPerGame(value);
+	return true;
+}
+
+bool LobbyLogic::applyLobbyOpenState(uint32_t value, uint32_t initiatorId)
+{
+	if (value == m_lobbyState->isLobbyOpen() || initiatorId != m_lobbyState->getHostId().value())
+		return false;
+
+	m_lobbyState->setLobbyOpen(value);
 	return true;
 }

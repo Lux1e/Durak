@@ -35,6 +35,7 @@ void Server::registerHandlers()
 	packetDispatcher.on(PacketType::SeatPositionsChangeRequest, &Server::onSeatPositionsChangeRequestPacket);
 	packetDispatcher.on(PacketType::SeatPositionsSwapRequest, &Server::onSeatPositionsSwapRequestPacket);
 	packetDispatcher.on(PacketType::PlayersPerGameChangeRequest, &Server::onPlayersPerGameChangeRequestPacket);
+	packetDispatcher.on(PacketType::LobbyOpenStateChangeRequest, &Server::onLobbyOpenStateChangeRequestPacket);
 }
 
 void Server::subscribeAll()
@@ -431,6 +432,24 @@ void Server::onPlayersPerGameChangeRequestPacket(ClientSession& client, Packet& 
 		if (lobbyLogic.applyPlayersPerGameChangeRequest(value, clientId))
 			broadcast(PacketFactory::makeNotifyPlayersPerGameChangedPacket(value), clientId);
 		else
+			sendFullSnapshotUpdate(client);
+	}
+}
+
+void Server::onLobbyOpenStateChangeRequestPacket(ClientSession& client, Packet& packet)
+{
+	std::cout << "123\n";
+	bool isOpen = packet.read<bool>();
+	uint32_t clientId = client.getPlayerProfile().value()->getId();
+
+	if (lobbyLogic.applyLobbyOpenState(isOpen, clientId))
+	{
+		std::cout << "1\n";
+			broadcast(PacketFactory::makeNotifyLobbyOpenStateChangedPacket(isOpen), clientId);
+	}
+	else
+	{
+		std::cout << "2\n";
 			sendFullSnapshotUpdate(client);
 	}
 }

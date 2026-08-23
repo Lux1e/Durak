@@ -101,6 +101,7 @@ private:
 	void onSeatPositionsChangeRequestPacket(ClientSession& client, Packet& packet);
 	void onSeatPositionsSwapRequestPacket(ClientSession& client, Packet& packet);
 	void onPlayersPerGameChangeRequestPacket(ClientSession& client, Packet& packet);
+	void onLobbyOpenStateChangeRequestPacket(ClientSession& client, Packet& packet);
 
 	void onPlayerTossPacket(ClientSession& client, Packet& packet);
 	void onPlayerBeatPacket(ClientSession& client, Packet& packet);

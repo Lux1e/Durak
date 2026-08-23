@@ -29,6 +29,7 @@
 #include "../../game/events/domain/SeatPositionsChangedEvent.h"
 #include "../../game/events/domain/SeatPositionsSwappedEvent.h"
 #include "../../game/events/domain/PlayersPerGameChangedEvent.h"
+#include "../../game/events/domain/LobbyOpenStateChangedEvent.h"
 #include "../../game/events/requests/ExitRequestEvent.h"
 
 
@@ -207,8 +208,9 @@ void LobbyLayer::subscribeAll()
 {
 	m_gameContext.ES.subscribe<SeatPositionsChangedEvent>(this, &LobbyLayer::onSeatPositionsChangedEvent);
 	m_gameContext.ES.subscribe<SeatPositionsSwappedEvent>(this, &LobbyLayer::onSeatPositionsSwappedEvent);
-	m_gameContext.ES.subscribe<PlayersPerGameChangedEvent>(this, &LobbyLayer::onPlayersPerGameChangedEvent);
 	m_gameContext.ES.subscribe<PlayerConnectedEvent>(this, &LobbyLayer::onPlayerConnectedEvent);
+	m_gameContext.ES.subscribe<PlayersPerGameChangedEvent>(this, &LobbyLayer::onPlayersPerGameChangedEvent);
+	m_gameContext.ES.subscribe<LobbyOpenStateChangedEvent>(this, &LobbyLayer::onLobbyOpenStateChangedEvent);
 }
 
 
@@ -574,4 +576,10 @@ void LobbyLayer::onPlayersPerGameChangedEvent(const PlayersPerGameChangedEvent& 
 {
 	m_seatsPanel->updateSeatPositions(event.playersPerGame);
 	updatePlayersTablePositions();
+}
+#include <iostream>
+void LobbyLayer::onLobbyOpenStateChangedEvent(const LobbyOpenStateChangedEvent& event, const EventInitiator& initiator)
+{
+	std::cout << "onLobbyOpenStateChangedEvent method called" << std::endl;
+	m_topLeftPanel->updateLockButton(*m_clientLobbyState);
 }

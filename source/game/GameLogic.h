@@ -2,15 +2,14 @@
 #include "../states/server/GameState.h"
 #include "CardData.h"
 #include <optional>
-#include <memory>
 
 
 
 class GameLogic final
 {
 public:
-	GameLogic() : statePtr(nullptr) {}
-	GameLogic(GameState& gameState) : statePtr(&gameState) {}
+	GameLogic() = default;
+	GameLogic(GameState& gameState) : m_gameState(&gameState) {}
 
 
 	void shuffleDeck(); //to do
@@ -27,7 +26,7 @@ public:
 	void moveTableCardsToHand(int seatPosition);
 
 private:
-	GameState* statePtr;
+	GameState* m_gameState = nullptr;
 
 	void requireState() const;
 };

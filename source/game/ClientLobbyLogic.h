@@ -23,7 +23,7 @@ class ClientLobbyLogic
 public:
 	ClientLobbyLogic()
 	{
-		statePtr = nullptr;
+		m_clientLobbyState = nullptr;
 	}
 
 	void setClientLobbyState(ClientLobbyState& state);
@@ -41,9 +41,10 @@ public:
 	std::vector<SeatChange> applySeatPositionsSwapRequest(uint32_t firstPlayerId, uint32_t secondPlayerId, uint32_t initiatorId);
 
 	std::vector<SeatChange> applyPlayersPerGameChange(uint32_t playersPerGame);
+	bool applyLobbyOpenState(bool isOpen);
 
 private:
-	ClientLobbyState* statePtr;
+	ClientLobbyState* m_clientLobbyState;
 
 	void requireState() const;
 };

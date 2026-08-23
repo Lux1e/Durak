@@ -8,19 +8,19 @@
 
 void ClientLobbyLogic::requireState() const
 {
-	if (!statePtr)
+	if (!m_clientLobbyState)
 		throw std::logic_error("statePtr is nullptr");
 }
 
 
 void ClientLobbyLogic::setClientLobbyState(ClientLobbyState& state)
 {
-	statePtr = &state;
+	m_clientLobbyState = &state;
 }
 
 bool ClientLobbyLogic::isClientLobbyState() const
 {
-	return statePtr;
+	return m_clientLobbyState;
 }
 
 
@@ -28,20 +28,20 @@ bool ClientLobbyLogic::applyPlayerConnected(uint32_t playerId, const std::string
 {
 	requireState();
 
-	if (statePtr->getClientPlayerDataById(playerId))
+	if (m_clientLobbyState->getClientPlayerDataById(playerId))
 		return false;
 
-	if (statePtr->isSeatOccupied(seatPosition))
+	if (m_clientLobbyState->isSeatOccupied(seatPosition))
 		return false;
 
-	statePtr->addClientPlayerData(ClientPlayerData(playerId, nickname, role), seatPosition);
+	m_clientLobbyState->addClientPlayerData(ClientPlayerData(playerId, nickname, role), seatPosition);
 	return true;
 }
 
 void ClientLobbyLogic::applyPlayerDisconnected(uint32_t playerId)
 {
 	requireState();
-	statePtr->deleteClientPlayerData(playerId);
+	m_clientLobbyState->deleteClientPlayerData(playerId);
 }
 
 
@@ -49,7 +49,7 @@ bool ClientLobbyLogic::applyPlayerNicknameChanged(uint32_t playerId, const std::
 {
 	requireState();
 
-	auto playerPtr = statePtr->getClientPlayerDataById(playerId);
+	auto playerPtr = m_clientLobbyState->getClientPlayerDataById(playerId);
 	if (!playerPtr)
 		return false;
 	else
@@ -63,13 +63,13 @@ bool ClientLobbyLogic::applySeatPositionsChanged(uint32_t playerId, int seatPosi
 {
 	requireState();
 
-	if (!statePtr->getClientPlayerDataById(playerId))
+	if (!m_clientLobbyState->getClientPlayerDataById(playerId))
 		return false;
 
-	if (statePtr->getPlayerIdBySeatIndex(seatPosition))
+	if (m_clientLobbyState->getPlayerIdBySeatIndex(seatPosition))
 		return false;
 
-	statePtr->movePlayerToSeatPosition(playerId, seatPosition);
+	m_clientLobbyState->movePlayerToSeatPosition(playerId, seatPosition);
 	return true;
 }
 
@@ -77,13 +77,13 @@ bool ClientLobbyLogic::applySeatPositionsSwapped(uint32_t firstPlayerId, uint32_
 {
 	requireState();
 
-	if (!statePtr->getClientPlayerDataById(firstPlayerId) || !statePtr->getClientPlayerDataById(secondPlayerId))
+	if (!m_clientLobbyState->getClientPlayerDataById(firstPlayerId) || !m_clientLobbyState->getClientPlayerDataById(secondPlayerId))
 		return false;
 
-	if (!statePtr->getPlayerSeatIndex(firstPlayerId) || !statePtr->getPlayerSeatIndex(secondPlayerId))
+	if (!m_clientLobbyState->getPlayerSeatIndex(firstPlayerId) || !m_clientLobbyState->getPlayerSeatIndex(secondPlayerId))
 		return false;
 
-	statePtr->swapPlayersSeatPositions(firstPlayerId, secondPlayerId);
+	m_clientLobbyState->swapPlayersSeatPositions(firstPlayerId, secondPlayerId);
 	return true;
 }
 
@@ -92,21 +92,21 @@ std::optional<SeatChange> ClientLobbyLogic::applySeatPositionsChangeRequest(uint
 {
 	requireState();
 
-	auto initiatorOpt = statePtr->getClientPlayerDataById(initiatorId);
+	auto initiatorOpt = m_clientLobbyState->getClientPlayerDataById(initiatorId);
 	if (!initiatorOpt)
 		return std::nullopt;
 
 	if (initiatorId != playerId && initiatorOpt->getRole() != ClientRole::Host)
 		return std::nullopt;
 
-	if (!statePtr->canMoveToAnotherSeat() && initiatorOpt->getRole() != ClientRole::Host)
+	if (!m_clientLobbyState->canMoveToAnotherSeat() && initiatorOpt->getRole() != ClientRole::Host)
 		return std::nullopt;
 
-	auto playerPtr = statePtr->getClientPlayerDataById(playerId);
+	auto playerPtr = m_clientLobbyState->getClientPlayerDataById(playerId);
 	if (!playerPtr)
 		return std::nullopt;
 
-	auto currentPlayerSeatPositionOpt = statePtr->getPlayerSeatIndex(playerId);
+	auto currentPlayerSeatPositionOpt = m_clientLobbyState->getPlayerSeatIndex(playerId);
 	if (!currentPlayerSeatPositionOpt)
 		return std::nullopt;
 
@@ -115,12 +115,12 @@ std::optional<SeatChange> ClientLobbyLogic::applySeatPositionsChangeRequest(uint
 
 	if (newSeatPosition != Constants::Lobby::QueueSeat)
 	{
-		auto playerInNewSeatPositionOpt = statePtr->getPlayerIdBySeatIndex(newSeatPosition);
+		auto playerInNewSeatPositionOpt = m_clientLobbyState->getPlayerIdBySeatIndex(newSeatPosition);
 		if (playerInNewSeatPositionOpt)
 			return std::nullopt;
 	}
 
-	statePtr->movePlayerToSeatPosition(playerId, newSeatPosition);
+	m_clientLobbyState->movePlayerToSeatPosition(playerId, newSeatPosition);
 
 	return SeatChange(playerId, newSeatPosition);
 }
@@ -132,7 +132,7 @@ std::vector<SeatChange> ClientLobbyLogic::applySeatPositionsSwapRequest(uint32_t
 	std::vector<SeatChange> vec;
 	vec.reserve(2);
 
-	auto initiator = statePtr->getClientPlayerDataById(initiatorId);
+	auto initiator = m_clientLobbyState->getClientPlayerDataById(initiatorId);
 	if (!initiator)
 		return vec;
 
@@ -143,24 +143,24 @@ std::vector<SeatChange> ClientLobbyLogic::applySeatPositionsSwapRequest(uint32_t
 	ClientPlayerData* secondPlayerPtr = nullptr;
 
 	if (firstPlayerId != initiatorId)
-		firstPlayerPtr = statePtr->getClientPlayerDataById(firstPlayerId);
+		firstPlayerPtr = m_clientLobbyState->getClientPlayerDataById(firstPlayerId);
 	else
 		firstPlayerPtr = initiator;
 
 	if (secondPlayerId != initiatorId)
-		secondPlayerPtr = statePtr->getClientPlayerDataById(secondPlayerId);
+		secondPlayerPtr = m_clientLobbyState->getClientPlayerDataById(secondPlayerId);
 	else
 		secondPlayerPtr = initiator;
 
 	if (!firstPlayerPtr || !secondPlayerPtr)
 		return vec;
 
-	auto currentFirstPlayerSeatIndexOpt = statePtr->getPlayerSeatIndex(firstPlayerId);
-	auto currentSecondPlayerSeatIndexOpt = statePtr->getPlayerSeatIndex(secondPlayerId);
+	auto currentFirstPlayerSeatIndexOpt = m_clientLobbyState->getPlayerSeatIndex(firstPlayerId);
+	auto currentSecondPlayerSeatIndexOpt = m_clientLobbyState->getPlayerSeatIndex(secondPlayerId);
 	if ((!currentFirstPlayerSeatIndexOpt || !currentSecondPlayerSeatIndexOpt) || (*currentFirstPlayerSeatIndexOpt == *currentSecondPlayerSeatIndexOpt))
 		return vec;
 
-	statePtr->swapPlayersSeatPositions(firstPlayerId, secondPlayerId);
+	m_clientLobbyState->swapPlayersSeatPositions(firstPlayerId, secondPlayerId);
 
 	vec.emplace_back(firstPlayerId, *currentSecondPlayerSeatIndexOpt);
 	vec.emplace_back(secondPlayerId, *currentFirstPlayerSeatIndexOpt);
@@ -176,20 +176,31 @@ std::vector<SeatChange> ClientLobbyLogic::applyPlayersPerGameChange(uint32_t pla
 	std::vector<SeatChange> vec;
 	vec.reserve(Constants::Lobby::MaxPlayersPerGame - Constants::Lobby::MinPlayersPerGame);
 
-	uint32_t currentPlayersPerGame = statePtr->getPlayersPerGame();
+	uint32_t currentPlayersPerGame = m_clientLobbyState->getPlayersPerGame();
 
 	if (playersPerGame < currentPlayersPerGame)
 	{
 		for (uint32_t i = playersPerGame; i < currentPlayersPerGame; ++i)
 		{
-			if (auto playerIdOpt = statePtr->getPlayerIdBySeatIndex(i))
+			if (auto playerIdOpt = m_clientLobbyState->getPlayerIdBySeatIndex(i))
 			{
-				statePtr->movePlayerToSeatPosition(*playerIdOpt, Constants::Lobby::QueueSeat);
+				m_clientLobbyState->movePlayerToSeatPosition(*playerIdOpt, Constants::Lobby::QueueSeat);
 				vec.emplace_back(*playerIdOpt, Constants::Lobby::QueueSeat);
 			}
 		}
 	}
 
-	statePtr->setPlayersPerGame(playersPerGame);
+	m_clientLobbyState->setPlayersPerGame(playersPerGame);
 	return vec;
+}
+
+bool ClientLobbyLogic::applyLobbyOpenState(bool isOpen)
+{
+	requireState();
+
+	if (isOpen == m_clientLobbyState->isLobbyOpen())
+		return false;
+
+	m_clientLobbyState->setLobbyOpen(isOpen);
+	return true;
 }

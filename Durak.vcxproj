@@ -237,10 +237,12 @@
     <ClInclude Include="source\game\ClientLobbyLogic.h" />
     <ClInclude Include="source\game\events\domain\ExitEvent.h" />
     <ClInclude Include="source\game\events\domain\InvalidRequestEvent.h" />
+    <ClInclude Include="source\game\events\domain\LobbyOpenStateChangedEvent.h" />
     <ClInclude Include="source\game\events\domain\SnapshotAppliedEvent.h" />
     <ClInclude Include="source\game\events\domain\WelcomeEvent.h" />
     <ClInclude Include="source\game\events\requests\ExitRequestEvent.h" />
     <ClInclude Include="source\game\events\requests\InputIpAddressRequestEvent.h" />
+    <ClInclude Include="source\game\events\requests\LobbyOpenStateChangeRequestEvent.h" />
     <ClInclude Include="source\game\events\requests\SeatPositionsSwapRequestEvent.h" />
     <ClInclude Include="source\game\events\ui\LobbyStateSyncEvent.h" />
     <ClInclude Include="source\game\GameContext.h" />

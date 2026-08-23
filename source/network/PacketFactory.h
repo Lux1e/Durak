@@ -42,6 +42,9 @@ public:
 	static Packet makePlayersPerGameChangeRequestPacket(uint32_t value);
 	static Packet makeNotifyPlayersPerGameChangedPacket(uint32_t value);
 
+	static Packet makeLobbyOpenStateChangeRequestPacket(bool value);
+	static Packet makeNotifyLobbyOpenStateChangedPacket(bool value);
+
 	static Packet makeDealCardPacket(uint32_t playerId, uint32_t cardId);
 	static Packet makeNotifyDealCardToOthersPacket(uint32_t playerId);
 

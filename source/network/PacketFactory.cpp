@@ -169,6 +169,22 @@ Packet PacketFactory::makeNotifyPlayersPerGameChangedPacket(uint32_t value)
 	return packet;
 }
 
+Packet PacketFactory::makeLobbyOpenStateChangeRequestPacket(bool value)
+{
+	Packet packet(PacketType::LobbyOpenStateChangeRequest);
+	packet.write(value);
+
+	return packet;
+}
+
+Packet PacketFactory::makeNotifyLobbyOpenStateChangedPacket(bool value)
+{
+	Packet packet(PacketType::NotifyLobbyOpenStateChanged);
+	packet.write(value);
+
+	return packet;
+}
+
 
 Packet PacketFactory::makeDealCardPacket(uint32_t playerId, uint32_t cardId)
 {

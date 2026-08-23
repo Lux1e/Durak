@@ -12,10 +12,12 @@
 #include "../game/events/domain/SeatPositionsChangedEvent.h"
 #include "../game/events/domain/SeatPositionsSwappedEvent.h"
 #include "../game/events/domain/PlayersPerGameChangedEvent.h"
+#include "../game/events/domain/LobbyOpenStateChangedEvent.h"
 #include "../game/events/domain/SnapshotAppliedEvent.h"
 #include "../game/events/requests/SeatPositionsChangeRequestEvent.h"
 #include "../game/events/requests/SeatPositionsSwapRequestEvent.h"
 #include "../game/events/requests/PlayersPerGameChangeRequestEvent.h"
+#include "../game/events/requests/LobbyOpenStateChangeRequestEvent.h"
 #include "../game/events/ui/LobbyStateSyncEvent.h"
 
 
@@ -48,6 +50,7 @@ void ClientModel::subscribeAll()
 	ES.subscribe<SeatPositionsChangeRequestEvent, ClientModel>(this, &ClientModel::onSeatPositionsChangeRequestEvent);
 	ES.subscribe<SeatPositionsSwapRequestEvent, ClientModel>(this, &ClientModel::onSeatPositionsSwapRequestEvent);
 	ES.subscribe<PlayersPerGameChangeRequestEvent, ClientModel>(this, &ClientModel::onPlayersPerGameChangeRequestEvent);
+	ES.subscribe<LobbyOpenStateChangeRequestEvent, ClientModel>(this, &ClientModel::onLobbyOpenStateChangeRequestEvent);
 }
 
 void ClientModel::registerHandlers()
@@ -71,6 +74,7 @@ void ClientModel::registerHandlers()
 	syncedPacketDispatcher.on(PacketType::NotifySeatPositionsChanged, &ClientModel::onNotifySeatPositionsChangedPacket);
 	syncedPacketDispatcher.on(PacketType::NotifySeatPositionsSwapped, &ClientModel::onNotifySeatPositionsSwappedPacket);
 	syncedPacketDispatcher.on(PacketType::NotifyPlayersPerGameChanged, &ClientModel::onNotifyPlayersPerGameChangedPacket);
+	syncedPacketDispatcher.on(PacketType::NotifyLobbyOpenStateChanged, &ClientModel::onNotifyLobbyOpenStateChangedPacket);
 }
 
 
@@ -404,13 +408,26 @@ void ClientModel::onNotifyPlayersPerGameChangedPacket(Packet& packet)
 
 	std::vector<SeatChange> vec = clientLobbyLogic.applyPlayersPerGameChange(playersPerGame);
 
-	assert(vec.empty());
-
-	//if (!vec.empty())
-	//	for (auto it : vec)
-	//		ES.publish<SeatPositionsChangedEvent>({ it.playerId, it.toSeatIndex });
+	if (!vec.empty())
+		sendSnapshotUpdateRequest();
 
 	ES.publish<PlayersPerGameChangedEvent>(playersPerGame);
+}
+#include <iostream>
+void ClientModel::onNotifyLobbyOpenStateChangedPacket(Packet& packet)
+{
+	bool isOpen = packet.read<bool>();
+
+	if (clientLobbyLogic.applyLobbyOpenState(isOpen))
+	{
+		std::cout << "LobbyOpenStateChangedEvent published" << std::endl;
+		ES.publish<LobbyOpenStateChangedEvent>(isOpen);
+	}
+	else
+	{
+		std::cout << "sendSnapshotUpdateRequest published" << std::endl;
+		sendSnapshotUpdateRequest();
+	}
 }
 
 
@@ -456,4 +473,20 @@ void ClientModel::onPlayersPerGameChangeRequestEvent(const PlayersPerGameChangeR
 
 	ES.publish<PlayersPerGameChangedEvent>(event.playersPerGameValue);
 	client.sendPacket(PacketFactory::makePlayersPerGameChangeRequestPacket(event.playersPerGameValue));
+}
+
+
+void ClientModel::onLobbyOpenStateChangeRequestEvent(const LobbyOpenStateChangeRequestEvent& event, const EventInitiator& initiator)
+{
+	if (clientLobbyLogic.applyLobbyOpenState(event.isOpen))
+	{
+		std::cout << "LobbyOpenStateChangeRequestPacket send" << std::endl;
+		client.sendPacket(PacketFactory::makeLobbyOpenStateChangeRequestPacket(event.isOpen));
+		ES.publish<LobbyOpenStateChangedEvent>(event.isOpen);
+	}
+	else
+	{
+		ES.publish<LobbyStateSyncEvent>(localContext);
+		std::cout << "LobbyStateSyncEvent called 2" << std::endl;
+	}
 }

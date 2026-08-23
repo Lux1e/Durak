@@ -14,6 +14,7 @@
 #include "../../core/animation/RotateAnimation.h"
 #include "../../game/events/requests/ExitRequestEvent.h"
 #include "LobbySettingsPanel.h"
+#include "../../game/events/requests/LobbyOpenStateChangeRequestEvent.h"
 
 
 
@@ -141,8 +142,10 @@ void LobbyTopLeftPanel::initLockButton(const ClientLobbyState& clientLobbyState,
 	unlockButtonComponents.colors.normal = m_buttonsNormalColor;
 	lockButtonComponents.colors.hovered = sf::Color::Red;
 	unlockButtonComponents.colors.hovered = sf::Color::Green;
-	lockButtonComponents.colors.pressed = UIUtils::scaleColor(lockButtonComponents.colors.hovered, 0.6f);
-	unlockButtonComponents.colors.pressed = UIUtils::scaleColor(unlockButtonComponents.colors.hovered, 0.6f);
+	//lockButtonComponents.colors.pressed = UIUtils::scaleColor(lockButtonComponents.colors.hovered, 0.6f);
+	//unlockButtonComponents.colors.pressed = UIUtils::scaleColor(unlockButtonComponents.colors.hovered, 0.6f);
+	lockButtonComponents.colors.pressed = { 150, 0, 0, 255 };
+	unlockButtonComponents.colors.pressed = { 0, 150, 0, 255 };
 
 	SpriteElement& lockSprite = static_cast<SpriteElement&>(m_lockButton->addChild(std::make_unique<SpriteElement>(gameContext.textureManager.getTexture("assets/textures/ui/locked.png"))));
 	lockSprite.setSize(m_lockButton->getSize());
@@ -158,28 +161,27 @@ void LobbyTopLeftPanel::initLockButton(const ClientLobbyState& clientLobbyState,
 
 	clientLobbyState.isLobbyOpen() ? lockSprite.setVisible(false) : unlockSprite.setVisible(false);
 
-	m_lockButton->setOnHover([this, lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element)
+	m_lockButton->setOnHover([clientLobbyStatePtr = &clientLobbyState, lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element)
 		{
-			if (lockSpritePtr->isVisible())
+			if (clientLobbyStatePtr->isLobbyOpen())
 			{
-				lockSpritePtr->setVisible(false);
-				unlockSpritePtr->setVisible(true);
-
-				unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.hovered);
+				lockSpritePtr->setVisible(true);
+				unlockSpritePtr->setVisible(false);
 			}
 
 			else
 			{
-				lockSpritePtr->setVisible(true);
-				unlockSpritePtr->setVisible(false);
-
-				lockSpritePtr->sprite().setColor(lockButtonComponents.colors.hovered);
+				lockSpritePtr->setVisible(false);
+				unlockSpritePtr->setVisible(true);
 			}
+
+			unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.hovered);
+			lockSpritePtr->sprite().setColor(lockButtonComponents.colors.hovered);
 		});
 
-	m_lockButton->setOnHoverEnd([lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element)
+	m_lockButton->setOnHoverEnd([clientLobbyStatePtr = &clientLobbyState, lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element)
 		{
-			if (lockSpritePtr->isVisible())
+			if (clientLobbyStatePtr->isLobbyOpen())
 			{
 				lockSpritePtr->setVisible(false);
 				unlockSpritePtr->setVisible(true);
@@ -197,47 +199,65 @@ void LobbyTopLeftPanel::initLockButton(const ClientLobbyState& clientLobbyState,
 
 	m_lockButton->setOnPressed([lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element)
 		{
-			if (lockSpritePtr->isVisible())
-				lockSpritePtr->sprite().setColor(lockButtonComponents.colors.pressed);
-			else
-				unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.pressed);
+			lockSpritePtr->sprite().setColor(lockButtonComponents.colors.pressed);
+			unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.pressed);
 		});
 
 	m_lockButton->setOnReleased([lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite, lockButtonComponents, unlockButtonComponents](UIInteractive& element, bool isHit)
 		{
 			if (isHit)
 			{
-				if (lockSpritePtr->isVisible())
-				{
-					lockSpritePtr->setVisible(false);
-					unlockSpritePtr->setVisible(true);
-
-					lockSpritePtr->sprite().setColor(lockButtonComponents.colors.normal);
-					unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.hovered);
-				}
-
-				else
-				{
-					lockSpritePtr->setVisible(true);
-					unlockSpritePtr->setVisible(false);
-
-					unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.normal);
-					lockSpritePtr->sprite().setColor(lockButtonComponents.colors.hovered);
-				}
+				lockSpritePtr->sprite().setColor(lockButtonComponents.colors.hovered);
+				unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.hovered);
 			}
-
 			else
 			{
-				lockSpritePtr->sprite().setColor(lockButtonComponents.colors.normal);
 				unlockSpritePtr->sprite().setColor(unlockButtonComponents.colors.normal);
+				lockSpritePtr->sprite().setColor(lockButtonComponents.colors.normal);
 			}
 		});
 
-	m_lockButton->setOnClick([]() {}); // to do
+
+	m_lockButton->setOnClick([lockSpritePtr = &lockSprite, gameContextPtr = &gameContext]()
+		{
+			if (lockSpritePtr->isVisible())
+				gameContextPtr->ES.publish<LobbyOpenStateChangeRequestEvent>(false);
+			else
+				gameContextPtr->ES.publish<LobbyOpenStateChangeRequestEvent>(true);
+		});
 
 
 	if (clientContext.localRole == ClientRole::Regular)
 	{
 		m_lockButton->blockInteraction();
 	}
+
+	m_onUpdateLockButton = ([this, lockSpritePtr = &lockSprite, unlockSpritePtr = &unlockSprite](bool isOpen)
+		{
+			bool wasHovered = m_lockButton->isHovered();
+			m_lockButton->setHovered(false);
+
+			if (isOpen)
+			{
+				lockSpritePtr->setVisible(false);
+				unlockSpritePtr->setVisible(true);
+			}
+
+			else
+			{
+				unlockSpritePtr->setVisible(false);
+				lockSpritePtr->setVisible(true);
+			}
+
+			if (wasHovered)
+				m_lockButton->setHovered(true);
+		});
+}
+
+#include <iostream>
+void LobbyTopLeftPanel::updateLockButton(const ClientLobbyState& clientLobbyState)
+{
+	if (m_onUpdateLockButton)
+		m_onUpdateLockButton(clientLobbyState.isLobbyOpen());
+	std::cout << "isOpen == " << clientLobbyState.isLobbyOpen() << std::endl;
 }

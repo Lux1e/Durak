@@ -51,6 +51,7 @@ public:
 	bool hasPlayer(const PlayerProfile& profile) const;
 	bool hasPlayer(uint64_t token) const;
 
+	void setHostId(uint32_t id);
 	std::optional<uint32_t> getHostId() const;
 
 private:

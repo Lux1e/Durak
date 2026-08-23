@@ -254,6 +254,10 @@ bool LobbyState::hasPlayer(uint64_t token) const
 	return false;
 }
 
+void LobbyState::setHostId(uint32_t id)
+{
+	hostId = id;
+}
 
 std::optional<uint32_t> LobbyState::getHostId() const
 {

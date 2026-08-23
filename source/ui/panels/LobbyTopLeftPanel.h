@@ -18,8 +18,12 @@ public:
 	void init(const ClientLobbyState& clientLobbyState, const GameContext& gameContext, const ClientContext& clientContext);
 	void initLockButton(const ClientLobbyState& clientLobbyState, const GameContext& gameContext, const ClientContext& clientContext);
 
+	void updateLockButton(const ClientLobbyState& clientLobbyState);
+
 private:
 	Button* m_lockButton = nullptr;
 
 	sf::Color m_buttonsNormalColor;
+
+	std::function<void(bool)> m_onUpdateLockButton;
 };

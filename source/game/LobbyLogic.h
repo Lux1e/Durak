@@ -8,13 +8,13 @@ class LobbyLogic
 public:
 	LobbyLogic()
 	{
-		statePtr = nullptr;
+		m_lobbyState = nullptr;
 	}
 
-	LobbyLogic(LobbyState& state) : statePtr(&state) {}
+	LobbyLogic(LobbyState& state) : m_lobbyState(&state) {}
 
 	void setLobbyState(LobbyState& state);
-	bool isLobbyState() const;
+	LobbyState* getLobbyState() const;
 
 	std::optional<DisconnectReason> isNewPlayerCanJoin() const;
 
@@ -25,8 +25,10 @@ public:
 	bool applySeatPositionsSwapRequest(uint32_t firstPlayerId, uint32_t secondPlayerId, uint32_t initiatorId);
 
 	bool applyPlayersPerGameChangeRequest(uint32_t value, uint32_t initiatorId);
+	bool applyLobbyOpenState(uint32_t value, uint32_t initiatorId);
+
 private:
-	LobbyState* statePtr;
+	LobbyState* m_lobbyState;
 
 	void requireState() const;
 };
