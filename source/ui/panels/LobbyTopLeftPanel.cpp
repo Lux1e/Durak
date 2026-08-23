@@ -254,10 +254,9 @@ void LobbyTopLeftPanel::initLockButton(const ClientLobbyState& clientLobbyState,
 		});
 }
 
-#include <iostream>
+
 void LobbyTopLeftPanel::updateLockButton(const ClientLobbyState& clientLobbyState)
 {
 	if (m_onUpdateLockButton)
 		m_onUpdateLockButton(clientLobbyState.isLobbyOpen());
-	std::cout << "isOpen == " << clientLobbyState.isLobbyOpen() << std::endl;
 }

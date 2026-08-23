@@ -577,9 +577,8 @@ void LobbyLayer::onPlayersPerGameChangedEvent(const PlayersPerGameChangedEvent& 
 	m_seatsPanel->updateSeatPositions(event.playersPerGame);
 	updatePlayersTablePositions();
 }
-#include <iostream>
+
 void LobbyLayer::onLobbyOpenStateChangedEvent(const LobbyOpenStateChangedEvent& event, const EventInitiator& initiator)
 {
-	std::cout << "onLobbyOpenStateChangedEvent method called" << std::endl;
 	m_topLeftPanel->updateLockButton(*m_clientLobbyState);
 }

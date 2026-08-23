@@ -413,21 +413,15 @@ void ClientModel::onNotifyPlayersPerGameChangedPacket(Packet& packet)
 
 	ES.publish<PlayersPerGameChangedEvent>(playersPerGame);
 }
-#include <iostream>
+
 void ClientModel::onNotifyLobbyOpenStateChangedPacket(Packet& packet)
 {
 	bool isOpen = packet.read<bool>();
 
 	if (clientLobbyLogic.applyLobbyOpenState(isOpen))
-	{
-		std::cout << "LobbyOpenStateChangedEvent published" << std::endl;
 		ES.publish<LobbyOpenStateChangedEvent>(isOpen);
-	}
 	else
-	{
-		std::cout << "sendSnapshotUpdateRequest published" << std::endl;
 		sendSnapshotUpdateRequest();
-	}
 }
 
 
@@ -480,13 +474,9 @@ void ClientModel::onLobbyOpenStateChangeRequestEvent(const LobbyOpenStateChangeR
 {
 	if (clientLobbyLogic.applyLobbyOpenState(event.isOpen))
 	{
-		std::cout << "LobbyOpenStateChangeRequestPacket send" << std::endl;
 		client.sendPacket(PacketFactory::makeLobbyOpenStateChangeRequestPacket(event.isOpen));
 		ES.publish<LobbyOpenStateChangedEvent>(event.isOpen);
 	}
 	else
-	{
 		ES.publish<LobbyStateSyncEvent>(localContext);
-		std::cout << "LobbyStateSyncEvent called 2" << std::endl;
-	}
 }

@@ -438,18 +438,11 @@ void Server::onPlayersPerGameChangeRequestPacket(ClientSession& client, Packet& 
 
 void Server::onLobbyOpenStateChangeRequestPacket(ClientSession& client, Packet& packet)
 {
-	std::cout << "123\n";
 	bool isOpen = packet.read<bool>();
 	uint32_t clientId = client.getPlayerProfile().value()->getId();
 
 	if (lobbyLogic.applyLobbyOpenState(isOpen, clientId))
-	{
-		std::cout << "1\n";
-			broadcast(PacketFactory::makeNotifyLobbyOpenStateChangedPacket(isOpen), clientId);
-	}
+		broadcast(PacketFactory::makeNotifyLobbyOpenStateChangedPacket(isOpen), clientId);
 	else
-	{
-		std::cout << "2\n";
-			sendFullSnapshotUpdate(client);
-	}
+		sendFullSnapshotUpdate(client);
 }
