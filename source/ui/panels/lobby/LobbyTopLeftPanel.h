@@ -1,5 +1,5 @@
 #pragma once
-#include "../core/Panel.h"
+#include "../../core/Panel.h"
 
 
 class Button;

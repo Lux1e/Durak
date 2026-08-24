@@ -1,6 +1,6 @@
 #pragma once
-#include "../core/Panel.h"
-#include "../widgets/Dropdown.h"
+#include "../../core/Panel.h"
+#include "../../widgets/Dropdown.h"
 
 
 class ClientLobbyState;

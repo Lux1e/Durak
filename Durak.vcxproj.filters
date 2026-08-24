@@ -129,13 +129,13 @@
     <ClCompile Include="source\core\animation\Easing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\ui\panels\LobbyTopLeftPanel.cpp">
+    <ClCompile Include="source\ui\panels\lobby\LobbyTopLeftPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\ui\panels\LobbyTablePanel.cpp">
+    <ClCompile Include="source\ui\panels\lobby\LobbyTablePanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\ui\panels\LobbySettingsPanel.cpp">
+    <ClCompile Include="source\ui\panels\lobby\LobbySettingsPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\ui\core\UIInteractive.cpp">
@@ -494,10 +494,10 @@
     <ClInclude Include="source\ui\layers\LobbyLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\ui\panels\LobbyQueuePanel.h">
+    <ClInclude Include="source\ui\panels\lobby\LobbyQueuePanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\ui\panels\LobbySeatsPanel.h">
+    <ClInclude Include="source\ui\panels\lobby\LobbySeatsPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\utils\MathUtils.h">
@@ -539,13 +539,13 @@
     <ClInclude Include="source\ui\widgets\Dropdown.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\ui\panels\LobbyTopLeftPanel.h">
+    <ClInclude Include="source\ui\panels\lobby\LobbyTopLeftPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\ui\panels\LobbyTablePanel.h">
+    <ClInclude Include="source\ui\panels\lobby\LobbyTablePanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\ui\panels\LobbySettingsPanel.h">
+    <ClInclude Include="source\ui\panels\lobby\LobbySettingsPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\core\input\InputCapture.h">

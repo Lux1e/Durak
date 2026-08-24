@@ -1,12 +1,12 @@
 #include "LobbySettingsPanel.h"
-#include "../../core/ClientContext.h"
-#include "../../game/GameContext.h"
-#include "../elements/RectangleElement.h"
-#include "../elements/TextElement.h"
-#include "../../utils/MathUtils.h"
-#include "../../utils/UIUtils.h"
-#include "../widgets/Button.h"
-#include "../ButtonBuilder.h"
+#include "../../../core/ClientContext.h"
+#include "../../../game/GameContext.h"
+#include "../../elements/RectangleElement.h"
+#include "../../elements/TextElement.h"
+#include "../../../utils/MathUtils.h"
+#include "../../../utils/UIUtils.h"
+#include "../../widgets/Button.h"
+#include "../../ButtonBuilder.h"
 
 
 

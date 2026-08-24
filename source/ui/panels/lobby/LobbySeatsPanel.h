@@ -1,10 +1,10 @@
 #pragma once
-#include "../../core/Constants.h"
-#include "../core/Panel.h"
-#include "../../utils/MathUtils.h"
-#include "../../states/client/ClientLobbyState.h"
-#include "../elements/RoundedRectangleElement.h"
-#include "../elements/RectangleElement.h"
+#include "../../../core/Constants.h"
+#include "../../core/Panel.h"
+#include "../../../utils/MathUtils.h"
+#include "../../../states/client/ClientLobbyState.h"
+#include "../../elements/RoundedRectangleElement.h"
+#include "../../elements/RectangleElement.h"
 
 
 
