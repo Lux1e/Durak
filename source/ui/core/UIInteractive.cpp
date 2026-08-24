@@ -154,9 +154,15 @@ void UIInteractive::onClick()
 }
 
 
+void UIInteractive::setOnDisabled(std::function<void(UIInteractive&, bool)> func)
+{
+	m_onDisabled = std::move(func);
+}
+
+
 void UIInteractive::setHovered(bool value)
 {
-	if (value == control.interaction.hovered || control.locks.hover != 0)
+	if (value == control.interaction.hovered || control.locks.hover != 0 || isDisabled())
 		return;
 
 	control.interaction.hovered = value;
@@ -176,10 +182,22 @@ void UIInteractive::setHovered(bool value)
 
 void UIInteractive::setDragged(bool value)
 {
-	if (value == control.interaction.dragged || control.locks.drag != 0)
+	if (value == control.interaction.dragged || control.locks.drag != 0 || isDisabled())
 		return;
 
 	control.interaction.dragged = value;
+}
+
+
+void UIInteractive::setDisabled(bool value)
+{
+	if (value == control.interaction.disabled)
+		return;
+
+	control.interaction.disabled = value;
+
+	if (m_onDisabled)
+		m_onDisabled(*this, value);
 }
 
 
@@ -196,6 +214,11 @@ bool UIInteractive::isPressed() const
 bool UIInteractive::isDragged() const
 {
 	return control.interaction.dragged;
+}
+
+bool UIInteractive::isDisabled() const
+{
+	return control.interaction.disabled;
 }
 
 
@@ -232,6 +255,7 @@ void UIInteractive::blockInteraction()
 	blockPress();
 	blockClick();
 	blockDrag();
+	setDisabled(true);
 }
 
 
@@ -265,6 +289,7 @@ void UIInteractive::unblockInteraction()
 	unblockPress();
 	unblockClick();
 	unblockDrag();
+	setDisabled(false);
 }
 
 
@@ -291,7 +316,7 @@ bool UIInteractive::canBeDragged() const
 
 void UIInteractive::setPressed(bool value, bool isHit)
 {
-	if (value == control.interaction.pressed || control.locks.press != 0)
+	if (value == control.interaction.pressed || control.locks.press != 0 || isDisabled())
 		return;
 
 	control.interaction.pressed = value;

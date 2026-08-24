@@ -48,17 +48,20 @@ public:
 	void setOnHover(std::function<void(UIInteractive&)> func);
 	void setOnHoverEnd(std::function<void(UIInteractive&)> func);
 	void setOnPressed(std::function<void(UIInteractive&)> func);
-	void setOnReleased(std::function<void(UIInteractive&, bool isHit)> func);
-
+	void setOnReleased(std::function<void(UIInteractive&, bool)> func);
 	void setOnClick(std::function<void()> func);
+	void setOnDisabled(std::function<void(UIInteractive&, bool)> func);
+
 	void onClick();
 
 	void setHovered(bool value);
 	void setDragged(bool value);
+	void setDisabled(bool value);
 
 	bool isHovered() const;
 	bool isPressed() const;
 	bool isDragged() const;
+	bool isDisabled() const;
 
 	void blockHover();
 	void blockPress();
@@ -101,6 +104,8 @@ private:
 	std::function<void(UIInteractive&, bool isHit)> m_onReleased;
 
 	std::function<void()> m_onClick;
+
+	std::function<void(UIInteractive&, bool)> m_onDisabled;
 };
 
 

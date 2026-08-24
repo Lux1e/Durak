@@ -10,6 +10,7 @@ struct ControlState
 		bool hovered;
 		bool pressed;
 		bool dragged;
+		bool disabled = false;
 	} interaction;
 
 	struct Locks
